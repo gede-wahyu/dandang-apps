@@ -15,49 +15,49 @@ const _router = [
     {
         path: "toko",
         name: "store-list",
-        redirect: '/coming-soon'
+        redirect: "/coming-soon",
         // component: () => import("../views/pages/"),
     },
     {
         path: "notifikasi",
         name: "notifications",
-        redirect: '/coming-soon'
+        redirect: "/coming-soon",
         // component: () => import("../views/pages/"),
     },
     {
         path: "pengaturan",
         name: "settings",
-        redirect: '/coming-soon'
+        redirect: "/coming-soon",
         // component: () => import("../views/pages/"),
     },
     {
         path: "produk-saya",
         name: "home-product-list",
-        redirect: '/coming-soon'
-        // component: () => import("../views/pages/"),
+        redirect: "/coming-soon",
+        // component: () => import("../views/pages/Notifications.vue"),
     },
     {
         path: "semua-transaksi",
         name: "home-transaction-list",
-        redirect: '/coming-soon'
+        redirect: "/coming-soon",
         // component: () => import("../views/pages/"),
     },
     {
         path: "transaksi-terjeda",
         name: "home-transaction-delay",
-        redirect: '/coming-soon'
+        redirect: "/coming-soon",
         // component: () => import("../views/pages/"),
     },
     {
         path: "distribusi",
         name: "home-distribution-list",
-        redirect: '/coming-soon'
+        redirect: "/coming-soon",
         // component: () => import("../views/pages/"),
     },
     {
         path: "saler",
         name: "home-saler-list",
-        redirect: '/coming-soon'
+        redirect: "/coming-soon",
         // component: () => import("../views/pages/"),
     },
 ];

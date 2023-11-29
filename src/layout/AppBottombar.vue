@@ -7,7 +7,6 @@
             :class="{
                 'bottombar-menuitem-active': checkActiveRoute(model, index),
             }"
-            @click="onModelClick($event, model)"
         >
             <div class="layout-bottombar-menuitem-icon">
                 <span class="material-symbols-outlined">
@@ -20,17 +19,14 @@
 
 <script setup>
 import { useRoute } from "vue-router";
-import { useLayout } from "./composables/layout.js";
-import { ref, onBeforeMount, watch } from "vue";
+import { onBeforeMount, watch } from "vue";
+import { useLayoutStore } from "../stores/LayoutStore";
+import { useMenuItemStore } from "../stores/MenuItemStore";
 
 const route = useRoute();
-const {
-    layoutConfig,
-    setActiveMenuItem,
-    setActiveRootMenuItem,
-    setDispPageName,
-    onBottombarUnactive,
-} = useLayout();
+const menuItemStore = useMenuItemStore();
+const layoutStore = useLayoutStore();
+
 const props = defineProps({
     models: {
         type: Array,
@@ -39,20 +35,24 @@ const props = defineProps({
 });
 
 onBeforeMount(() => {
-    for (let index in props.models) {
-        if (props.models[index].to.name === route.name) {
-            setActiveMenuItem(props.models[index].to.name);
-            setActiveRootMenuItem(props.models[index].to.name.split("-")[0]);
-            setDispPageName(props.models[index].label);
-            return;
-        }
-    }
+    if (layoutStore.layoutConfig.activeMenuItem === "")
+        layoutStore.setActiveMenuItem(route.name);
+    if (layoutStore.layoutConfig.activePageName === "")
+        layoutStore.setActivePageName(
+            layoutStore.getActivePageName(route.name, menuItemStore.menuItem)
+        );
 });
 
 watch(
-    () => layoutConfig.activeMenuItem.value,
+    () => route.name,
     () => {
-        onBottombarUnactive();
+        layoutStore.setActiveMenuItem(route.name);
+        layoutStore.setActivePageName(
+            layoutStore.getActivePageName(
+                layoutStore.layoutConfig.activeMenuItem,
+                menuItemStore.menuItem
+            )
+        );
     }
 );
 
@@ -65,13 +65,6 @@ const checkActiveRoute = (model, index) => {
         return false;
     }
 };
-
-const onModelClick = (event, model) => {
-    setActiveMenuItem(model.to.name);
-    setActiveRootMenuItem(...model.to.name.split("-"[0]));
-    setDispPageName(model.label);
-};
-
 //
 </script>
 

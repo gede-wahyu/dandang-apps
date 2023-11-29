@@ -3,49 +3,48 @@
         <router-link :to="{ name: 'home' }">
             <span
                 class="material-symbols-outlined"
-                :class="{ hidden: !layoutState.windowButtonNavVisible.value }"
+                :class="{
+                    hidden: layoutStore.layoutState.toggleBackWindowButton,
+                }"
                 >view_cozy</span
             >
             <span
                 class="material-symbols-outlined"
-                :class="{ hidden: !layoutState.backButtonNavVisible.value }"
+                :class="{
+                    hidden: !layoutStore.layoutState.toggleBackWindowButton,
+                }"
                 >arrow_back_ios_new</span
             >
         </router-link>
     </div>
     <div class="middle-content">
-        <span class="page-title">{{ pageName }}</span>
+        <span class="page-title">{{
+            layoutStore.layoutConfig.activePageName
+        }}</span>
     </div>
     <div class="right-icon">
         <router-link to="#">
             <span class="material-symbols-outlined">person</span>
+            <!-- <img src="../assets/icon/user.png" alt="user"/> -->
         </router-link>
-        <!-- <img
-            src="../assets/icon/user.png"
-            alt="user"
-            style="height: 1rem; width: 1rem"
-        /> -->
     </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
-import { useLayout } from "./composables/layout";
+import { watch, onBeforeMount } from "vue";
+import { useLayoutStore } from "../stores/LayoutStore";
 
-const { layoutConfig, layoutState, onBackButtonActive } = useLayout();
-const pageName = ref("");
-
-// onMounted(() => {
-//     console.log(layoutConfig.activeMenuItem.value);
-// });
+const layoutStore = useLayoutStore();
 
 watch(
-    () => layoutConfig.activeMenuItem.value,
+    () => layoutStore.layoutConfig.activeMenuItem,
     () => {
-        pageName.value = layoutConfig.pageDispName.value;
-        onBackButtonActive();
+        layoutStore.onToggleBackWindowButtton();
     }
 );
+onBeforeMount(() => {
+    layoutStore.onToggleBackWindowButtton;
+});
 
 //
 </script>

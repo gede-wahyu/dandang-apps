@@ -27,12 +27,11 @@
     </div>
 
     <div class="layout-menu">
-        <div v-for="grid in menuItems" class="layout-menu-grid">
-            <router-link
-                v-for="item in grid"
-                :to="item.to"
-                @click="onModelClick($event, item)"
-            >
+        <div
+            v-for="row in menuItemStore.gridHomeChildren"
+            class="layout-menu-grid"
+        >
+            <router-link v-for="item in row" :to="item.to">
                 <div class="layout-menuitem">
                     <span
                         class="layout-menuitem-icon card material-symbols-outlined"
@@ -46,65 +45,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import { useLayout } from "../layout/composables/layout";
+import { useMenuItemStore } from "../stores/MenuItemStore";
 
-const {
-    layoutConfig,
-    setActiveMenuItem,
-    setActiveRootMenuItem,
-    setDispPageName,
-} = useLayout();
-
-const model = ref([
-    {
-        label: "Produk Saya",
-        icon: "local_mall",
-        to: { name: "home-product-list" },
-    },
-    {
-        label: "Buat Transaksi",
-        icon: "shopping_cart",
-        to: { name: "transaction-add" },
-    },
-    {
-        label: "Semua Transaksi",
-        icon: "paid",
-        to: { name: "home-transaction-list" },
-    },
-    {
-        label: "Transaksi Terjeda",
-        icon: "pending_actions",
-        to: { name: "home-transaction-delay" },
-    },
-    {
-        label: "Distribusi",
-        icon: "local_shipping",
-        to: { name: "home-distribution-list" },
-    },
-    {
-        label: "Saler",
-        icon: "deployed_code_account",
-        to: { name: "home-saler-list" },
-    },
-]);
-
-const menuItems = computed(() => {
-    let newArr = [];
-    let _menuItems = model.value;
-
-    while (_menuItems.length) {
-        newArr.push(_menuItems.splice(0, 4));
-    }
-
-    return newArr;
-});
-
-const onModelClick = (event, model) => {
-    setActiveMenuItem(model.to.name);
-    setActiveRootMenuItem(...model.to.name.split("-"[0]));
-    setDispPageName(model.label);
-};
+const menuItemStore = useMenuItemStore();
 
 //
 </script>
