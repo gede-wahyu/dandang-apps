@@ -15,32 +15,34 @@ const _router = [
     {
         path: "toko",
         name: "store-list",
-        redirect: "/coming-soon",
-        // component: () => import("../views/pages/"),
+        // redirect: "/coming-soon",
+        component: () => import("../views/pages/Store.vue"),
     },
     {
         path: "notifikasi",
         name: "notifications",
-        redirect: "/coming-soon",
-        // component: () => import("../views/pages/"),
+        // redirect: "/coming-soon",
+        component: () => import("../views/pages/Notifications.vue"),
     },
     {
         path: "pengaturan",
         name: "settings",
-        redirect: "/coming-soon",
-        // component: () => import("../views/pages/"),
+        // redirect: "/coming-soon",
+        component: () => import("../views/pages/Settings.vue"),
     },
+
+    // TODO: UNDER THE HOME MENU
     {
         path: "produk-saya",
         name: "home-product-list",
         redirect: "/coming-soon",
-        // component: () => import("../views/pages/Notifications.vue"),
+        component: () => import("../views/pages/Settings.vue"),
     },
     {
         path: "semua-transaksi",
         name: "home-transaction-list",
         redirect: "/coming-soon",
-        // component: () => import("../views/pages/"),
+        component: () => import("../views/pages/Settings.vue"),
     },
     {
         path: "transaksi-terjeda",

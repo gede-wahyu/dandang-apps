@@ -97,5 +97,32 @@
             "description": "Teh Celup dengan campuran Gula pasir. Biasa disebut Teh Manis sebagai minuman yang paling sering dikonsumsi oleh orang Indonesia. Dapat disajikan dengan menggunakan es batu.",
             "packaging": [{ "size": 18, "uom": "grams", "price": 5000 }]
         }
+    ],
+
+    "reports": [
+        {
+            "period": "today",
+            "amount": 576000,
+            "currency": "IDR",
+            "percentage": -0.7
+        },
+        {
+            "period": "week",
+            "amount": 215000,
+            "currency": "IDR",
+            "percentage": 6.2
+        },
+        {
+            "period": "month",
+            "amount": 4234000,
+            "currency": "IDR",
+            "percentage": -1
+        },
+        {
+            "period": "year",
+            "amount": 10291000,
+            "currency": "IDR",
+            "percentage": 2.3
+        }
     ]
 }

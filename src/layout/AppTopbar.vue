@@ -4,14 +4,14 @@
             <span
                 class="material-symbols-outlined"
                 :class="{
-                    hidden: layoutStore.layoutState.toggleBackWindowButton,
+                    hidden: layoutStore.layoutState.backWindowButton,
                 }"
                 >view_cozy</span
             >
             <span
                 class="material-symbols-outlined"
                 :class="{
-                    hidden: !layoutStore.layoutState.toggleBackWindowButton,
+                    hidden: !layoutStore.layoutState.backWindowButton,
                 }"
                 >arrow_back_ios_new</span
             >
@@ -39,11 +39,11 @@ const layoutStore = useLayoutStore();
 watch(
     () => layoutStore.layoutConfig.activeMenuItem,
     () => {
-        layoutStore.onToggleBackWindowButtton();
+        layoutStore.setBackWindowButton();
     }
 );
 onBeforeMount(() => {
-    layoutStore.onToggleBackWindowButtton;
+    layoutStore.setBackWindowButton;
 });
 
 //

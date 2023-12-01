@@ -1,5 +1,10 @@
 <template>
-    <div class="layout-bottombar-menu">
+    <div
+        class="layout-bottombar-menu"
+        :style="{
+            display: layoutStore.layoutState.buttonbarMenuVisible ? '' : 'none',
+        }"
+    >
         <router-link
             v-for="(model, index) in models"
             :to="model.to"
@@ -41,6 +46,7 @@ onBeforeMount(() => {
         layoutStore.setActivePageName(
             layoutStore.getActivePageName(route.name, menuItemStore.menuItem)
         );
+    layoutStore.setButtonbarMenuVisible();
 });
 
 watch(
@@ -53,6 +59,7 @@ watch(
                 menuItemStore.menuItem
             )
         );
+        layoutStore.setButtonbarMenuVisible();
     }
 );
 
@@ -86,6 +93,7 @@ const checkActiveRoute = (model, index) => {
 
     .layout-bottombar-menuitem {
         user-select: none;
+
         display: flex;
         align-items: center;
         justify-content: center;
@@ -93,11 +101,8 @@ const checkActiveRoute = (model, index) => {
         height: 2.5rem;
         border-radius: 50%;
         color: var(--text-color-secondary);
-        transition: background-color 0.2s ease;
+        transition: background-color 0.3s ease;
 
-        &:active {
-            background-color: transparent;
-        }
         .layout-bottombar-menuitem-icon span {
             display: flex;
             align-items: center;
@@ -126,7 +131,7 @@ const checkActiveRoute = (model, index) => {
     }
 
     .layout-bottombar-menuitem.bottombar-menuitem-active {
-        background-color: var(--primary-d);
+        background: var(--primary-a);
         color: var(--text-primary);
         border: 2px solid var(--surface-border);
 

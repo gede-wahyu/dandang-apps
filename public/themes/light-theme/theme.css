@@ -8,22 +8,27 @@
     --primary-gradient-cd: linear-gradient(45deg, #1575fb 15%, #44c6fe);
 
     /* font set */
-    --font-family: "Roboto", sans-serif;
-    --text-color: #4c5b93;
+    --font-family: "Poppins", sans-serif;
+    --text-color: rgb(57, 63, 92);
     --text-color-secondary: #7e8597;
     --text-primary: #f7faff;
+    /* --text-primary-2: #b1d7e4; */
 
     /* other set */
     --surface-a: #ffffff;
-    --surface-b: #d2effa;
-    --surface-ground: #f7faff;
+    /* --surface-b: #d2effa; */
+    --surface-ground: #fcfefd;
+    --surface-ground-transparent: #fcfefd00;
+    --surface-ground-darker: #f8f8f8;
     --surface-card: #ffffff;
-    --surface-glass: rgba(215, 244, 255, 0.4);
+    /* --surface-glass: rgba(215, 244, 255, 0.4); */
     --surface-border: #eff7ff;
-    --border-radius: 10px;
+    --border-radius: 15px;
     --border-radius-2: 30px;
-    --box-shadow: rgba(100, 100, 111, 0.2);
+    --box-shadow: rgba(149, 157, 165, 0.2);
     --box-shadow-a: rgba(100, 100, 111, 0.1);
+    --box-shadow-set: var(--box-shadow) 0px 8px 24px;
+    --box-shadow-set-hover: var(--box-shadow-a) 0px 7px 29px 0px;
 
     color-scheme: light;
 }

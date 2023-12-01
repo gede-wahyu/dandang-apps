@@ -1,160 +1,324 @@
 <template>
-    <div class="report">
-        <div class="card report-item">
-            <div class="report-item-left">
-                <div class="report-item-icon">
-                    <span class="material-symbols-outlined"> today </span>
+    <div class="greeting">
+        <span class="greet">Hi Wahyu,</span>
+        <div class="span message">Welcome back!</div>
+    </div>
+
+    <div class="report-wrapper">
+        <div class="report">
+            <div
+                v-for="(report, index) in reports"
+                class="report-item"
+                :class="'bg-' + index"
+            >
+                <div class="report-item-left">
+                    <div class="report-item-icon">
+                        <span class="material-symbols-outlined">
+                            {{
+                                `${
+                                    report.period === "today"
+                                        ? "today"
+                                        : report.period === "week"
+                                        ? "date_range"
+                                        : report.period === "month"
+                                        ? "calendar_month"
+                                        : report.period === "year"
+                                        ? "event_note"
+                                        : "calendar_today"
+                                }`
+                            }}
+                        </span>
+                    </div>
+                    <div class="report-item-text">
+                        <span>{{
+                            `transaksi ${
+                                report.period === "today"
+                                    ? "hari"
+                                    : report.period === "week"
+                                    ? "minggu"
+                                    : report.period === "month"
+                                    ? "bulan"
+                                    : report.period === "year"
+                                    ? "tahun"
+                                    : ""
+                            } ini`
+                        }}</span
+                        ><span>{{
+                            reportStore.formatCurrency(report.amount)
+                        }}</span>
+                    </div>
                 </div>
-                <div class="report-item-text">
-                    <span>Transaksi hari ini</span><span>Rp 576.000,00</span>
+                <div
+                    class="report-item-percentage"
+                    :class="{
+                        'percentage-minus': report.percentage <= 0,
+                        'percentage-plus': report.percentage > 0,
+                    }"
+                >
+                    {{ report.percentage }}%
                 </div>
             </div>
-            <div class="report-item-percentage percentage-minus">-0.7%</div>
-        </div>
-        <div class="card report-item">
-            <div class="report-item-left">
-                <div class="report-item-icon">
-                    <span class="material-symbols-outlined">
-                        calendar_month
-                    </span>
-                </div>
-                <div class="report-item-text">
-                    <span>transaksi bulan ini</span><span>Rp 4.234.000,00</span>
-                </div>
-            </div>
-            <div class="report-item-percentage percentage-plus">+15%</div>
         </div>
     </div>
 
-    <div class="layout-menu">
-        <div
-            v-for="row in menuItemStore.gridHomeChildren"
-            class="layout-menu-grid"
+    <ul class="layout-menu">
+        <li
+            class="layout-menuitem"
+            v-for="(item, index) in menuItemStore.getHomeChildren"
         >
-            <router-link v-for="item in row" :to="item.to">
-                <div class="layout-menuitem">
-                    <span
-                        class="layout-menuitem-icon card material-symbols-outlined"
-                        >{{ item.icon }}</span
-                    >
-                    <span class="layout-menuitem-text">{{ item.label }}</span>
+            <router-link :to="item.to">
+                <div class="layout-menuitem-icon">
+                    <span class="material-symbols-outlined">{{
+                        item.icon
+                    }}</span>
+                </div>
+                <div class="layout-menuitem-text">
+                    <span>{{ item.label }}</span>
                 </div>
             </router-link>
-        </div>
-    </div>
+        </li>
+    </ul>
 </template>
 
 <script setup>
 import { useMenuItemStore } from "../stores/MenuItemStore";
+import { useReportStore } from "../stores/ReportStore";
+import { ref, onBeforeMount } from "vue";
 
 const menuItemStore = useMenuItemStore();
+const reportStore = useReportStore();
+
+const reports = ref([]);
+
+onBeforeMount(async () => {
+    await reportStore.getReport();
+    reports.value = reportStore.report;
+});
 
 //
 </script>
 
 <style scoped lang="scss">
-.report {
+.greeting {
+    margin: 0 0 1.25rem 0.5rem;
+    font-weight: 500;
+    .greet {
+        font-size: 1.75rem;
+        font-weight: 700;
+    }
+}
+
+.report-wrapper {
+    position: relative;
+    width: 100%;
+    height: 8rem;
+    overflow-x: scroll;
+    overflow-y: visible;
+
+    &::-webkit-scrollbar {
+        width: 0;
+    }
+
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    align-items: center;
 
-    .report-item {
+    .report {
+        z-index: -1;
+        position: absolute;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        .report-item-left {
-            display: flex;
-            flex-direction: row;
-            gap: 1rem;
+        flex-direction: row;
+        gap: 1.25rem;
+        user-select: none;
+
+        .bg-0 {
+            background-color: var(--red-500);
         }
-        .report-item-icon {
+        .bg-1 {
+            background-color: var(--green-500);
+        }
+        .bg-2 {
+            background-color: var(--blue-500);
+        }
+        .bg-3 {
+            background-color: var(--purple-500);
+        }
+
+        .report-item {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            color: var(--text-color-secondary);
+            padding: 2rem;
+            width: calc(100vw - 5rem);
+            color: var(--text-primary);
 
-            span {
-                font-size: 1.75rem;
-            }
-        }
-        .report-item-text {
-            display: flex;
-            flex-direction: column;
-            gap: 0.2rem;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--surface-border);
+            // box-shadow: var(--box-shadow-set);
+            transition: box-shadow, filter 0.2s ease;
 
-            span:first-of-type {
-                color: var(--text-color-secondary);
-                text-transform: uppercase;
-                font-size: 0.75rem;
+            &:hover {
+                box-shadow: var(--box-shadow-set-hover);
             }
+            .report-item-left {
+                display: flex;
+                flex-direction: row;
+                gap: 1rem;
+            }
+            .report-item-icon {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                // color: var(--text-color-secondary);
+                color: var(--text-primary);
 
-            span:last-of-type {
-                font-weight: 500;
+                span {
+                    font-size: 1.75rem;
+                }
             }
-        }
-        .percentage-minus {
-            color: var(--red-600);
-        }
-        .percentage-plus {
-            color: var(--green-600);
+            .report-item-text {
+                display: flex;
+                flex-direction: column;
+                gap: 0.2rem;
+
+                span:first-of-type {
+                    // color: var(--text-color-secondary);
+                    text-transform: uppercase;
+                    font-size: 0.75rem;
+                }
+
+                span:last-of-type {
+                    font-weight: 500;
+                }
+            }
+            .report-item-percentage {
+                background-color: var(--surface-card);
+                padding: 0.2rem 0;
+                width: 4rem;
+                border-radius: var(--border-radius);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .percentage-minus {
+                color: var(--red-600);
+            }
+            .percentage-plus {
+                color: var(--green-600);
+            }
         }
     }
 }
 
 .layout-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1rem 0;
-    .layout-menu-grid {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        a {
-            .layout-menuitem {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                gap: 0.5rem;
-                width: 4rem;
-                .layout-menuitem-icon {
-                    width: 100%;
-                    height: 4rem;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    background-color: var(--primary-a);
-                    // background: linear-gradient(
-                    //     to bottom left,
-                    //     var(--primary-a),
-                    //     var(--primary-b)
-                    // );
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+    padding: 0;
+    list-style: none;
 
-                    &:hover {
-                        filter: brightness(85%);
-                    }
-                    &:active {
-                        filter: brightness(100%);
-                    }
-                }
-                span.layout-menuitem-icon {
-                    font-size: 2rem;
-                    color: var(--text-primary);
-                }
-                .layout-menuitem-text {
-                    color: var(--text-color-secondary);
-                    font-size: 0.8rem;
-                    text-align: center;
-                }
+    .layout-menuitem {
+        background-color: var(--surface-card);
+        border: 1px solid var(--surface-border);
+        border-radius: var(--border-radius);
+        transition: box-shadow, filter 0.2s ease;
+        box-shadow: var(--box-shadow-set);
+        aspect-ratio: 5/4;
+
+        a {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 1rem;
+            height: 100%;
+            width: 100%;
+        }
+
+        &:hover {
+            box-shadow: var(--box-shadow-set-hover);
+        }
+        &:active {
+            filter: brightness(95%);
+        }
+
+        .layout-menuitem-icon {
+            width: 3rem;
+            height: 3rem;
+            background-color: var(--surface-ground-darker);
+            border-radius: 50%;
+            border: 1px solid var(--surface-border);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            span {
+                font-size: 2rem;
+                color: var(--primary-a);
             }
         }
-    }
-    .layout-menu-grid:last-child {
-        display: inline-flex;
-        justify-content: start;
-        /* width of menuitem times menuitem-n divide by the gap-n */
-        gap: calc((100% - (4rem * 4)) / 3);
+
+        .layout-menuitem-text {
+            margin-top: 0.5rem;
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-wrap: nowrap;
+        }
     }
 }
+
+// .layout-menu {
+//     display: grid;
+//     grid-template-columns: 1fr 1fr 1fr;
+//     gap: 1.25rem;
+//     margin-bottom: 1.25rem;
+//     padding: 0;
+//     list-style: none;
+
+//     .layout-menuitem {
+//         background-color: var(--surface-card);
+//         border: 1px solid var(--surface-border);
+//         border-radius: var(--border-radius);
+//         transition: box-shadow, filter 0.2s ease;
+//         box-shadow: var(--box-shadow-set);
+
+//         a {
+//             display: flex;
+//             flex-direction: column;
+//             padding: 1rem;
+//             height: 100%;
+//             width: 100%;
+//         }
+
+//         &:hover {
+//             box-shadow: var(--box-shadow-set-hover);
+//         }
+//         &:active {
+//             filter: brightness(95%);
+//         }
+
+//         .layout-menuitem-icon {
+//             aspect-ratio: 1/1;
+//             width: 100%;
+//             background-color: var(--primary-a);
+//             border-radius: 8px;
+//             display: flex;
+//             justify-content: center;
+//             align-items: center;
+
+//             span {
+//                 font-size: 2rem;
+//                 color: var(--text-primary);
+//             }
+//         }
+
+//         .layout-menuitem-text {
+//             margin-top: 0.5rem;
+//             color: var(--text-color);
+//             font-weight: 500;
+//             font-size: 0.9rem;
+//             text-align: center;
+//         }
+//     }
+// }
 </style>

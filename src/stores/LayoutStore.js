@@ -8,10 +8,11 @@ export const useLayoutStore = defineStore("layoutStore", {
             activePageName: "",
         },
         layoutState: {
-            backButtonVisible: false,
-            toggleBackWindowButton: false,
+            backWindowButton: false,
+            buttonbarMenuVisible: false,
         },
     }),
+    getters: {},
     actions: {
         changeTheme(theme) {
             this.layoutConfig.theme = theme;
@@ -22,26 +23,29 @@ export const useLayoutStore = defineStore("layoutStore", {
         setActivePageName(name) {
             this.layoutConfig.activePageName = name;
         },
+        setBackWindowButton() {
+            if (this.layoutConfig.activeMenuItem === "home")
+                this.layoutState.backWindowButton = false;
+            else this.layoutState.backWindowButton = true;
+        },
+        setButtonbarMenuVisible() {
+            if (this.layoutConfig.activeMenuItem === "transaction-add")
+                this.layoutState.buttonbarMenuVisible = false;
+            else this.layoutState.buttonbarMenuVisible = true;
+        },
         getActivePageName(routeName, menuItem) {
             for (let i in menuItem) {
                 if (routeName === menuItem[i].to.name) {
-                    console.log(menuItem[i].label);
                     return menuItem[i].label;
                 }
                 if (menuItem[i].children) {
                     for (let j in menuItem[i].children) {
                         if (routeName === menuItem[i].children[j].to.name) {
-                            console.log(menuItem[i].children[j].label);
                             return menuItem[i].children[j].label;
                         }
                     }
                 }
             }
-        },
-        onToggleBackWindowButtton() {
-            if (this.layoutConfig.activeMenuItem === "home") {
-                this.layoutState.toggleBackWindowButton = false;
-            } else this.layoutState.toggleBackWindowButton = true;
         },
     },
 });
