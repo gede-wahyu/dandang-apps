@@ -47,6 +47,14 @@ onBeforeMount(() => {
             layoutStore.getActivePageName(route.name, menuItemStore.menuItem)
         );
     layoutStore.setButtonbarMenuVisible();
+
+    if (
+        localStorage.getItem("layoutTone") ||
+        localStorage.getItem("layoutTheme")
+    ) {
+        let tone = localStorage.getItem("layoutTone");
+        layoutStore.onChangeTone(tone);
+    }
 });
 
 watch(
@@ -131,7 +139,7 @@ const checkActiveRoute = (model, index) => {
     }
 
     .layout-bottombar-menuitem.bottombar-menuitem-active {
-        background: var(--primary-a);
+        background: var(--primary);
         color: var(--text-primary);
         border: 2px solid var(--surface-border);
 

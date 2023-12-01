@@ -9,7 +9,8 @@ export const useProductStore = defineStore("productStore", {
     actions: {
         async getProducts() {
             this.loading = true;
-            const res = await fetch("http://localhost:3001/products");
+            // const res = await fetch("http://localhost:3001/products");
+            const res = await fetch("http://192.168.31.125:3001/products");
             const data = await res.json();
 
             this.products = data;

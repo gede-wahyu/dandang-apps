@@ -131,16 +131,16 @@ onBeforeMount(async () => {
         user-select: none;
 
         .bg-0 {
-            background-color: var(--red-500);
+            background-color: var(--primary);
         }
         .bg-1 {
-            background-color: var(--green-500);
+            background-color: var(--cyan-500);
         }
         .bg-2 {
-            background-color: var(--blue-500);
+            background-color: var(--red-500);
         }
         .bg-3 {
-            background-color: var(--purple-500);
+            background-color: var(--indigo-500);
         }
 
         .report-item {
@@ -198,6 +198,7 @@ onBeforeMount(async () => {
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                font-weight: 500;
             }
             .percentage-minus {
                 color: var(--red-600);
@@ -253,7 +254,7 @@ onBeforeMount(async () => {
 
             span {
                 font-size: 2rem;
-                color: var(--primary-a);
+                color: var(--primary);
             }
         }
 
@@ -266,59 +267,4 @@ onBeforeMount(async () => {
         }
     }
 }
-
-// .layout-menu {
-//     display: grid;
-//     grid-template-columns: 1fr 1fr 1fr;
-//     gap: 1.25rem;
-//     margin-bottom: 1.25rem;
-//     padding: 0;
-//     list-style: none;
-
-//     .layout-menuitem {
-//         background-color: var(--surface-card);
-//         border: 1px solid var(--surface-border);
-//         border-radius: var(--border-radius);
-//         transition: box-shadow, filter 0.2s ease;
-//         box-shadow: var(--box-shadow-set);
-
-//         a {
-//             display: flex;
-//             flex-direction: column;
-//             padding: 1rem;
-//             height: 100%;
-//             width: 100%;
-//         }
-
-//         &:hover {
-//             box-shadow: var(--box-shadow-set-hover);
-//         }
-//         &:active {
-//             filter: brightness(95%);
-//         }
-
-//         .layout-menuitem-icon {
-//             aspect-ratio: 1/1;
-//             width: 100%;
-//             background-color: var(--primary-a);
-//             border-radius: 8px;
-//             display: flex;
-//             justify-content: center;
-//             align-items: center;
-
-//             span {
-//                 font-size: 2rem;
-//                 color: var(--text-primary);
-//             }
-//         }
-
-//         .layout-menuitem-text {
-//             margin-top: 0.5rem;
-//             color: var(--text-color);
-//             font-weight: 500;
-//             font-size: 0.9rem;
-//             text-align: center;
-//         }
-//     }
-// }
 </style>

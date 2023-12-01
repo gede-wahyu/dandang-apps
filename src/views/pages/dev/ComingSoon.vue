@@ -52,11 +52,7 @@ const router = useRouter();
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    background: linear-gradient(
-        to right bottom,
-        var(--primary-a),
-        var(--primary-b)
-    );
+    background: linear-gradient((to right bottom, #46c4ff, #58e0a9));
     .company {
         text-transform: uppercase;
         font-size: 0.75rem;
@@ -71,8 +67,9 @@ const router = useRouter();
             font-weight: 600;
         }
         .message {
+            margin-top: 0.75rem;
             line-height: 1.5rem;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
         .footer {
             display: flex;

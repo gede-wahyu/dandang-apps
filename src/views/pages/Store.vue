@@ -7,6 +7,12 @@
             itaque neque animi provident pariatur, natus dolores et labore totam
             praesentium ipsum temporibus?
         </p>
-        <Button class="flex justify-content-end" label="Click me" />
+        <div class="flex justify-content-end">
+            <Button
+                class="flex justify-content-end"
+                severity="warning"
+                label="Click me"
+            />
+        </div>
     </div>
 </template>

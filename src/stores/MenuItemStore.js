@@ -10,17 +10,6 @@ export const useMenuItemStore = defineStore("menuItemStore", {
         getHomeChildren() {
             return this.menuItem[0].children;
         },
-        gridHomeChildren() {
-            let newArr = [];
-            let _menuItems = [];
-            _menuItems.push(...this.menuItem[0].children);
-
-            while (_menuItems.length) {
-                newArr.push(_menuItems.splice(0, 2));
-            }
-
-            return newArr;
-        },
     },
     actions: {
         getItemKey(routeName) {

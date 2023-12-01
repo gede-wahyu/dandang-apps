@@ -9,7 +9,8 @@ export const useReportStore = defineStore("reportStore", {
     actions: {
         async getReport() {
             this.isLoading = true;
-            const res = await fetch("http://localhost:3001/reports");
+            // const res = await fetch("http://localhost:3001/reports");
+            const res = await fetch("http://192.168.31.125:3001/reports");
             const data = await res.json();
 
             this.report = data;

@@ -4,6 +4,7 @@ export const useLayoutStore = defineStore("layoutStore", {
     state: () => ({
         layoutConfig: {
             theme: "light-theme",
+            tone: "tone-green",
             activeMenuItem: "",
             activePageName: "",
         },
@@ -14,8 +15,24 @@ export const useLayoutStore = defineStore("layoutStore", {
     }),
     getters: {},
     actions: {
-        changeTheme(theme) {
-            this.layoutConfig.theme = theme;
+        onChangeTone(tone) {
+            const elementId = "tone-css";
+            const linkElement = document.getElementById(elementId);
+            const cloneLinkElement = linkElement.cloneNode(true);
+            const newToneUrl = linkElement
+                .getAttribute("href")
+                .replace(this.layoutConfig.tone, tone);
+            cloneLinkElement.setAttribute("id", elementId + "-clone");
+            cloneLinkElement.setAttribute("href", newToneUrl);
+            cloneLinkElement.addEventListener("load", () => {
+                linkElement.remove();
+                cloneLinkElement.setAttribute("id", elementId);
+                this.layoutConfig.tone = tone;
+            });
+            linkElement.parentNode.insertBefore(
+                cloneLinkElement,
+                linkElement.nextSibling
+            );
         },
         setActiveMenuItem(item) {
             this.layoutConfig.activeMenuItem = item;
