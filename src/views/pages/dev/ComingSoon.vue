@@ -14,6 +14,7 @@ const router = useRouter();
             </p>
             <div class="footer">
                 <Button
+                    style="background-color: var(--tone-green)"
                     label="Kembali"
                     @click="router.push({ name: 'home' })"
                 />
@@ -22,20 +23,23 @@ const router = useRouter();
         <div class="dev">
             <span>Omah IT</span>
             <div class="contact">
-                <a href="https://www.linkedin.com/in/i-gede-wahyu-sedana/"
+                <a
+                    tabindex="-1"
+                    href="https://www.linkedin.com/in/i-gede-wahyu-sedana/"
                     ><i class="pi pi-linkedin"
                 /></a>
                 <span>|</span>
-                <a href="https://github.com/gede-wahyu"
+                <a tabindex="-1" href="https://github.com/gede-wahyu"
                     ><i class="pi pi-github"
                 /></a>
                 <span>|</span>
                 <a
+                    tabindex="-1"
                     href="https://www.linkedin.com/in/thomas-edwin-suryo-prayogo-02670a212/"
                     ><i class="pi pi-linkedin"
                 /></a>
                 <span>|</span>
-                <a href="https://github.com/Thomasborn"
+                <a tabindex="-1" href="https://github.com/Thomasborn"
                     ><i class="pi pi-github"
                 /></a>
             </div>

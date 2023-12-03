@@ -15,7 +15,6 @@ export const useProductStore = defineStore("productStore", {
 
             this.products = data;
             this.loading = false;
-            // console.log("product state changed");
         },
     },
 });

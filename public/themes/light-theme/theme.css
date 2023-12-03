@@ -19,13 +19,28 @@
 
     /* utils set */
     --color-danger: #ff384b;
+    --color-danger-500: #b32735;
     --color-danger-a: rgba(255, 56, 76, 50%);
+    --color-danger-a3: rgba(255, 56, 76, 30%);
+    --color-danger-a8: rgba(255, 56, 76, 80%);
+
     --color-warning: #ff9f42;
+    --color-warning-500: #b36f2e;
     --color-warning-a: rgba(255, 161, 66, 50%);
+    --color-warning-a3: rgba(255, 161, 66, 30%);
+    --color-warning-a8: rgba(255, 161, 66, 80%);
+
     --color-success: #29c76f;
+    --color-success-500: #1d8b4e;
     --color-success-a: rgba(41, 199, 112, 50%);
+    --color-success-a3: rgba(41, 199, 112, 30%);
+    --color-success-a8: rgba(41, 199, 112, 80%);
+    
     --color-info: #7254f3;
+    --color-info-500: #503baa;
     --color-info-a: rgba(113, 84, 242, 50%);
+    --color-info-a3: rgba(113, 84, 242, 30%);
+    --color-info-a8: rgba(113, 84, 242, 80%);
 
     /* other set */
     --surface-a: #ffffff;

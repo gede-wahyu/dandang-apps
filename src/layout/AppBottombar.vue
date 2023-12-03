@@ -1,10 +1,5 @@
 <template>
-    <div
-        class="layout-bottombar-menu"
-        :style="{
-            display: layoutStore.layoutState.buttonbarMenuVisible ? '' : 'none',
-        }"
-    >
+    <div class="layout-bottombar-menu">
         <router-link
             v-for="(model, index) in models"
             :to="model.to"

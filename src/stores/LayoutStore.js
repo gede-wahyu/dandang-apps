@@ -11,6 +11,7 @@ export const useLayoutStore = defineStore("layoutStore", {
         layoutState: {
             backWindowButton: false,
             buttonbarMenuVisible: false,
+            isModalOpen: false
         },
     }),
     getters: {},
