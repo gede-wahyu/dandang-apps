@@ -31,19 +31,19 @@
 git clone https://github.com/gede-wahyu/dandang-apps.git
 ```
 
-1. head to the repos
+2. head to the repos
 
 ```
 cd dandang-apps
 ```
 
-1. install all dependencies on code editor terminal:
+3. install all dependencies on code editor terminal:
 
 ```
 npm install
 ```
 
-1. to start local server run this on terminal:
+4. to start local server run this on terminal:
 
 ```
 npm run dev
@@ -54,9 +54,6 @@ or
 ```
 npx vite
 ```
-
-> [!TIP]
-> make sure local server and json server have different port
 
 ### expose network and preview on other devices
 
@@ -75,7 +72,7 @@ or
 npx vite --host
 ```
 
-1. visit the link that appear in terminal on other devices
+2. visit the link that appear in terminal on other devices
 
 > [!TIP]
 > if not working, visit this [link](https://www.youtube.com/watch?v=uRYHX4EwYYA) for tutorial

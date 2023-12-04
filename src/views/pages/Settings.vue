@@ -42,14 +42,8 @@ const options = ref(["green", "blue", "orange", "purple", "red"]);
 watch(
     () => layoutStore.layoutConfig.tone || layoutStore.layoutConfig.theme,
     () => {
-        localStorage.setItem(
-            "layoutTone",
-            layoutStore.layoutConfig.tone
-        );
-        localStorage.setItem(
-            "layoutTheme",
-            layoutStore.layoutConfig.theme
-        );
+        localStorage.setItem("layoutTone", layoutStore.layoutConfig.tone);
+        localStorage.setItem("layoutTheme", layoutStore.layoutConfig.theme);
     }
 );
 

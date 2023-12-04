@@ -54,6 +54,7 @@ const btnClass = ref({
     "d-button-warning": props.severity === "warning",
     "d-button-info": props.severity === "info",
     "d-button-success": props.severity === "success",
+    "d-button-unknown": props.severity === "unknown",
 });
 </script>
 
@@ -117,6 +118,15 @@ const btnClass = ref({
         outline: 1px solid var(--primary);
     }
 }
+.d-button-success {
+    background: var(--color-success);
+
+    &.d-button:focus {
+        box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 1),
+            0 0 0 3px var(--color-success-a);
+        outline: 1px solid var(--color-success);
+    }
+}
 .d-button-danger {
     background: var(--color-danger);
 
@@ -144,13 +154,13 @@ const btnClass = ref({
         outline: 1px solid var(--color-info);
     }
 }
-.d-button-success {
-    background: var(--color-success);
+.d-button-unknown {
+    background: var(--color-unknown);
 
     &.d-button:focus {
         box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 1),
-            0 0 0 3px var(--color-success-a);
-        outline: 1px solid var(--color-success);
+            0 0 0 3px var(--color-unknown-a);
+        outline: 1px solid var(--color-unknown);
     }
 }
 </style>

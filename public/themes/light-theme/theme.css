@@ -42,6 +42,12 @@
     --color-info-a3: rgba(113, 84, 242, 30%);
     --color-info-a8: rgba(113, 84, 242, 80%);
 
+    --color-unknown: #6878a0;
+    --color-unknown-500: #495470;
+    --color-unknown-a: rgba(105, 120, 161, 50%);
+    --color-unknown-a3: rgba(105, 120, 161, 30%);
+    --color-unknown-a8: rgba(105, 120, 161, 80%);
+
     /* other set */
     --surface-a: #ffffff;
     --surface-ground: #fcfefd;

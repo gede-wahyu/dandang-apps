@@ -1,7 +1,7 @@
 <template>
     <div class="card">
         <h5 style="margin-bottom: 1rem; padding: 1.5rem">Pilih Produk</h5>
-        <!-- <Button label="Help" @click="addProductOfCart(2)" /> -->
+        <!-- <Button label="Help" @click="console.log(cart)" /> -->
         <ul class="products">
             <div v-for="(product, index) in products">
                 <li
@@ -97,6 +97,9 @@
                                               ' item'
                                             : 0 + ' item'
                                     "
+                                    @click="
+                                        onEditProductOfCart(index, product.key)
+                                    "
                                     outline
                                 />
                             </div>
@@ -108,7 +111,7 @@
     </div>
 
     <div class="cart-wrapper">
-        <div class="cart" role="button" tabindex="-1">
+        <div class="cart" role="button" tabindex="-1" @click="onOpenCart">
             <div class="cart-amount-item">
                 <span class="material-symbols-outlined"> shopping_cart </span>
                 <span
@@ -135,7 +138,7 @@
     </div>
 
     <Modal v-model:visible="visible" navType="back" :modalStyle="modalStyle">
-        <template #header>{{ products[productIndex].name }}</template>
+        <template #header>{{ name }}</template>
         <template #footer>
             <div class="summ">
                 <div class="total-item">
@@ -202,7 +205,7 @@
                         :value="_model"
                         v-model="model"
                         :inputId="`variant-${index}`"
-                        :checked="model === _model"
+                        :checked="model.size === _model.size"
                     />
                     <label :for="`variant-${index}`">
                         <span>{{ `${_model.size} ${_model.uom}` }}</span>
@@ -256,8 +259,8 @@ const onSelectProduct = (index) => {
     /** set inital value on select a product */
     key.value = products.value[index].key;
     name.value = products.value[index].name;
-    amount.value = 1;
     model.value = products.value[index].packaging[0];
+    amount.value = 1;
 
     /** pass the index of selected product and open the modal */
     productIndex.value = index;
@@ -274,15 +277,28 @@ const addToCart = () => {
     if (!model.value.uom) return;
     if (!model.value.price) return;
 
-    /** assign to cart */
-    cart.value.push({
-        key: key.value,
-        name: name.value,
-        amount: amount.value,
-        size: model.value.size,
-        uom: model.value.uom,
-        price: model.value.price,
-    });
+    /** edit if already in cart */
+    let _product = checkCart(key.value) ? checkCart(key.value) : -1;
+    if (key.value === _product.key) {
+        cart.value.splice(checkCartIndex(key.value), 1, {
+            key: key.value,
+            name: name.value,
+            amount: amount.value,
+            size: model.value.size,
+            uom: model.value.uom,
+            price: model.value.price,
+        });
+    } else {
+        /** assign to cart */
+        cart.value.push({
+            key: key.value,
+            name: name.value,
+            amount: amount.value,
+            size: model.value.size,
+            uom: model.value.uom,
+            price: model.value.price,
+        });
+    }
 
     /** close the modal */
     visible.value = false;
@@ -295,18 +311,34 @@ const checkCart = (key) => {
     if (!foundProduct) return false;
     if (foundProduct) return foundProduct;
 };
-
-const addProductOfCart = (key) => {
-    let cartIndex = cart.value.map((item) => item.key).indexOf(key);
-    cart.value[cartIndex].amount++;
+const checkCartIndex = (key) => {
+    return cart.value.map((item) => item.key).indexOf(key);
 };
-const removeProductOfCart = (key) => {
-    let cartIndex = cart.value.map((item) => item.key).indexOf(key);
-    if (cart.value[cartIndex].amount < 2) {
+
+const addProductOfCart = (_key) => {
+    cart.value[checkCartIndex(_key)].amount++;
+};
+const removeProductOfCart = (_key) => {
+    if (cart.value[checkCartIndex(_key)].amount < 2) {
         cart.value.splice(cartIndex, 1);
         return;
     }
     cart.value[cartIndex].amount--;
+};
+
+const onEditProductOfCart = (index, _key) => {
+    let editedProduct = checkCart(_key);
+    key.value = editedProduct.key;
+    name.value = editedProduct.name;
+    model.value = {
+        size: editedProduct.size,
+        uom: editedProduct.uom,
+        price: editedProduct.price,
+    };
+    amount.value = editedProduct.amount;
+
+    productIndex.value = index;
+    visible.value = true;
 };
 
 const priceRange = (items) => {
