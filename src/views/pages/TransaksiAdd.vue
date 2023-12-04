@@ -184,7 +184,7 @@
             <div class="add-to-cart-button">
                 <Button
                     @click.prevent="addToCart"
-                    label="Tambah"
+                    :label="checkCartIndex(key) === -1 ? 'Tambah' : 'Perbarui'"
                     icon="shopping_cart"
                     class="flex w-full"
                     tabindex="-1"
