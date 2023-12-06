@@ -1,7 +1,6 @@
 <template>
     <div class="card">
         <h5 style="margin-bottom: 1rem; padding: 1.5rem">Pilih Produk</h5>
-        <!-- <Button label="Help" @click="console.log(cart)" /> -->
         <ul class="products">
             <div v-for="(product, index) in products">
                 <li
@@ -12,20 +11,19 @@
                         <div class="product-item-name">
                             <span>{{ product.name }}</span>
                         </div>
-                        <!-- <div class="product-item-rank">
-                            <Tag label="Terlaris No.1" severity="warning" />
-                        </div> -->
                         <div class="product-item-stock">
                             <span
                                 >Terjual
-                                <span class="product-item-stock-number">{{
-                                    Math.floor(Math.random() * 23) + 1
-                                }}</span>
-                                sisa stok
+                                <span class="product-item-stock-number"
+                                    >5</span
+                                ></span
+                            >
+                            <span>|</span>
+                            <span
+                                >Sisa
                                 <span class="product-item-stock-number"
                                     >100</span
-                                >
-                                pcs</span
+                                ></span
                             >
                         </div>
                         <div class="product-item-variant">
@@ -71,7 +69,7 @@
                                     "
                                     style="padding: 0.5rem"
                                 />
-                                <span>{{
+                                <span class="add-remove-span">{{
                                     checkCart(product.key)
                                         ? checkCart(product.key).amount
                                         : 0
@@ -93,12 +91,13 @@
                                     icon="edit_note"
                                     :label="
                                         checkCart(product.key)
-                                            ? checkCart(product.key).amount +
-                                              ' item'
+                                            ? countSameProductOfCart(
+                                                  product.key
+                                              ) + ' item'
                                             : 0 + ' item'
                                     "
                                     @click="
-                                        onEditProductOfCart(index, product.key)
+                                        onPreviewProductOfCart(index, product)
                                     "
                                     outline
                                 />
@@ -140,7 +139,7 @@
     <Modal v-model:visible="visible" navType="back" :modalStyle="modalStyle">
         <template #header>{{ name }}</template>
         <template #footer>
-            <div class="summ">
+            <div class="summ" :class="{ hidden: modalMode.preview }">
                 <div class="total-item">
                     {{ `Total ( ${amount} ) produk` }}
                 </div>
@@ -155,7 +154,10 @@
                     }}
                 </div>
             </div>
-            <div class="add-to-cart-label">
+            <div
+                class="add-to-cart-label"
+                :class="{ hidden: modalMode.preview }"
+            >
                 <span class="label">Jumlah pembelian</span>
                 <div class="amount-set">
                     <Button
@@ -183,8 +185,20 @@
             </div>
             <div class="add-to-cart-button">
                 <Button
-                    @click.prevent="addToCart"
-                    :label="checkCartIndex(key) === -1 ? 'Tambah' : 'Perbarui'"
+                    @click.prevent="
+                        modalMode.preview
+                            ? onSelectProduct(productIndex)
+                            : modalMode.edit
+                            ? addToCart()
+                            : addToCart()
+                    "
+                    :label="
+                        modalMode.preview
+                            ? 'Tambah Varian Lain'
+                            : modalMode.edit
+                            ? 'Perbarui'
+                            : 'Tambah'
+                    "
                     icon="shopping_cart"
                     class="flex w-full"
                     tabindex="-1"
@@ -193,7 +207,7 @@
             </div>
         </template>
 
-        <div class="select-variant">
+        <div class="select-variant" :class="{ hidden: modalMode.preview }">
             <div class="title">Pilih varian</div>
             <div class="options">
                 <div
@@ -220,17 +234,65 @@
             </div>
         </div>
 
-        <!-- TODO: DELETE THIS WHEN FINISHED -->
-        <!-- <pre>{{
-            { key, name, amount, model, total: amount * model.price }
-        }}</pre> -->
+        <div class="preview-product" :class="{ hidden: !modalMode.preview }">
+            <div
+                v-for="(item, index) in checkSameKeyProductofCart(key)"
+                class="preview-product-item"
+            >
+                <div class="label">
+                    <span>Varian</span>
+                    <span>{{ item.size + " " + item.uom }}</span>
+                </div>
+                <div class="preview-product-right">
+                    <div class="price">
+                        {{
+                            new Intl.NumberFormat("id-ID", {
+                                style: "currency",
+                                currency: "IDR",
+                            }).format(item.price)
+                        }}
+                    </div>
+                    <div class="amount-button-set">
+                        <Button
+                            icon="edit_note"
+                            label="Edit"
+                            insStyle="gap: 0.25rem"
+                            outline
+                            @click="onEditProductOfCart(item)"
+                        />
+                        <Button
+                            icon="remove"
+                            @click.prevent="
+                                removeProductOfCart(item.key, item.size)
+                            "
+                            style="padding: 0.5rem"
+                        />
+                        <span class="add-remove-span">{{
+                            checkCart(item.key, item.size)
+                                ? checkCart(item.key, item.size).amount
+                                : 0
+                        }}</span>
+                        <Button
+                            icon="add"
+                            @click.prevent="
+                                addProductOfCart(item.key, item.size)
+                            "
+                            style="padding: 0.5rem"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
     </Modal>
 </template>
 
 <script setup>
 import { useProductStore } from "../../stores/ProductStore";
-import { ref, onBeforeMount } from "vue";
+import { ref, onBeforeMount, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
+const route = useRoute();
+const router = useRouter();
 const productStore = useProductStore();
 const products = ref([]);
 const visible = ref(false);
@@ -241,6 +303,11 @@ const modalStyle = ref({
     width: "100%",
     "padding-bottom": "2.5rem",
 });
+const modalMode = ref({
+    view: false,
+    preview: false,
+    edit: false,
+});
 
 const key = ref("");
 const name = ref("");
@@ -249,11 +316,32 @@ const model = ref({});
 
 const productIndex = ref(null);
 const cart = ref([]);
+const editedCartIndex = ref(null);
 
 onBeforeMount(async () => {
     await productStore.getProducts();
     products.value = productStore.products;
 });
+watch(
+    () => visible.value,
+    () => {
+        if (!visible.value) router.replace({ name: "transaction-add" });
+    }
+);
+watch(route, (newVal) => {
+    visible.value = newVal.query?.show ? true : false;
+});
+
+const openModal = () => {
+    visible.value = true;
+    router.push({ name: "transaction-add", query: { show: true } });
+};
+const closeModal = () => {
+    visible.value = false;
+    modalMode.view = false;
+    modalMode.preview = false;
+    modalMode.edit = false;
+};
 
 const onSelectProduct = (index) => {
     /** set inital value on select a product */
@@ -264,7 +352,8 @@ const onSelectProduct = (index) => {
 
     /** pass the index of selected product and open the modal */
     productIndex.value = index;
-    visible.value = true;
+    modalMode.value.preview = false;
+    openModal();
 };
 
 const addToCart = () => {
@@ -277,69 +366,113 @@ const addToCart = () => {
     if (!model.value.uom) return;
     if (!model.value.price) return;
 
-    /** edit if already in cart */
-    let _product = checkCart(key.value) ? checkCart(key.value) : -1;
-    if (key.value === _product.key) {
-        cart.value.splice(checkCartIndex(key.value), 1, {
-            key: key.value,
-            name: name.value,
-            amount: amount.value,
-            size: model.value.size,
-            uom: model.value.uom,
-            price: model.value.price,
-        });
-    } else {
+    let _product = checkCart(key.value, model.value.size)
+        ? checkCart(key.value, model.value.size)
+        : checkCart(key.value)
+        ? checkCart(key.value)
+        : false;
+
+    let productToAdd = {
+        key: key.value,
+        name: name.value,
+        amount: amount.value,
+        size: model.value.size,
+        uom: model.value.uom,
+        price: model.value.price,
+    };
+
+    if (!modalMode.value.edit) {
         /** assign to cart */
-        cart.value.push({
-            key: key.value,
-            name: name.value,
-            amount: amount.value,
-            size: model.value.size,
-            uom: model.value.uom,
-            price: model.value.price,
-        });
+        if (_product.key === key.value && _product.size === model.value.size) {
+            productToAdd.amount = productToAdd.amount + _product.amount;
+            cart.value.splice(
+                checkCartIndex(key.value, model.value.size),
+                1,
+                productToAdd
+            );
+        } else {
+            cart.value.push(productToAdd);
+        }
+        editedCartIndex.value = null;
+    } else if (modalMode.value.edit) {
+        cart.value.splice(editedCartIndex.value, 1);
+        modalMode.value.edit = false;
+        addToCart();
     }
 
     /** close the modal */
-    visible.value = false;
-    console.log(cart.value);
+    closeModal();
 };
 
-const checkCart = (key) => {
+const checkCart = (key, size) => {
     if (cart.value.length < 1) return;
-    let foundProduct = cart.value.find((p) => p.key === key);
+    /** match ? return Obj.product : return undefined */
+    let foundProduct = size
+        ? cart.value.find((p) => p.key === key && p.size === size)
+        : cart.value.find((p) => p.key === key);
     if (!foundProduct) return false;
     if (foundProduct) return foundProduct;
 };
-const checkCartIndex = (key) => {
-    return cart.value.map((item) => item.key).indexOf(key);
+const checkSameKeyProductofCart = (key) => {
+    /** match ? return ArrObj.product : return [] */
+    return cart.value.filter((item) => item.key === key);
+};
+const checkCartIndex = (key, size) => {
+    return size
+        ? cart.value
+              .map((item) => item.key === key && item.size === size)
+              .indexOf(true)
+        : cart.value.map((item) => item.key).indexOf(key);
+};
+const countSameProductOfCart = (key) => {
+    return cart.value.reduce(
+        (sum, p) => (p.key === key ? sum + p.amount : sum),
+        0
+    );
 };
 
-const addProductOfCart = (_key) => {
-    cart.value[checkCartIndex(_key)].amount++;
+const addProductOfCart = (key, size) => {
+    cart.value[checkCartIndex(key, size)].amount++;
 };
-const removeProductOfCart = (_key) => {
-    if (cart.value[checkCartIndex(_key)].amount < 2) {
-        cart.value.splice(cartIndex, 1);
+const removeProductOfCart = (key, size) => {
+    if (cart.value[checkCartIndex(key, size)].amount <= 1) {
+        cart.value.splice(checkCartIndex(key, size), 1);
         return;
     }
-    cart.value[cartIndex].amount--;
+    cart.value[checkCartIndex(key, size)].amount--;
 };
 
-const onEditProductOfCart = (index, _key) => {
-    let editedProduct = checkCart(_key);
-    key.value = editedProduct.key;
-    name.value = editedProduct.name;
+const onPreviewProductOfCart = (index, product) => {
+    let previewedProduct = checkCart(product.key, product.size);
+    key.value = previewedProduct.key;
+    name.value = previewedProduct.name;
     model.value = {
-        size: editedProduct.size,
-        uom: editedProduct.uom,
-        price: editedProduct.price,
+        size: previewedProduct.size,
+        uom: previewedProduct.uom,
+        price: previewedProduct.price,
     };
-    amount.value = editedProduct.amount;
+    amount.value = previewedProduct.amount;
 
     productIndex.value = index;
-    visible.value = true;
+    modalMode.value.preview = true;
+    openModal();
 };
+
+const onEditProductOfCart = (item) => {
+    key.value = item.key;
+    name.value = item.name;
+    amount.value = item.amount;
+    model.value = {
+        size: item.size,
+        uom: item.uom,
+        price: item.price,
+    };
+    modalMode.value.edit = true;
+    modalMode.value.preview = false;
+    editedCartIndex.value = checkCartIndex(item.key, item.size);
+};
+
+const onOpenCart = () => {};
 
 const priceRange = (items) => {
     let lowest = new Intl.NumberFormat("id-ID").format(
@@ -350,7 +483,7 @@ const priceRange = (items) => {
     );
     let higest = new Intl.NumberFormat("id-ID").format(
         items.reduce(
-            (min, p) => (p.price > min ? p.price : min),
+            (max, p) => (p.price > max ? p.price : max),
             items[0].price
         )
     );
@@ -416,7 +549,7 @@ ul {
         .product-item-left {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            gap: 0.75rem;
 
             .product-item-name {
                 text-transform: capitalize;
@@ -432,6 +565,8 @@ ul {
             .product-item-stock {
                 font-size: 0.8rem;
                 color: var(--text-color-secondary);
+                display: flex;
+                gap: 0.5rem;
 
                 .product-item-stock-number {
                     font-weight: 500;
@@ -446,6 +581,9 @@ ul {
 
             .product-item-price {
                 font-weight: 500;
+                height: 100%;
+                display: flex;
+                align-items: end;
             }
         }
 
@@ -457,7 +595,7 @@ ul {
             .product-item-img {
                 display: flex;
                 aspect-ratio: 7/6;
-                width: 6rem;
+                width: 7rem;
 
                 .img-none {
                     display: flex;
@@ -481,16 +619,12 @@ ul {
                 & > button {
                     width: 100%;
                 }
-                .product-item-button-one-var {
-                    span {
-                        display: inline-block;
-                        padding: 0 0.5rem;
-                        width: 2rem;
-                        text-align: center;
-                    }
-                }
                 .product-item-button-many-var {
                     width: 100%;
+
+                    button {
+                        width: 100%;
+                    }
                 }
             }
         }
@@ -530,6 +664,45 @@ ul {
     }
 }
 
+.preview-product {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 1rem;
+
+    .preview-product-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 2px dashed var(--surface-input-border);
+        &:first-child {
+            border-top: 2px dashed var(--surface-input-border);
+        }
+
+        .label {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-product-right {
+            display: flex;
+            flex-direction: column;
+            align-items: end;
+            gap: 0.5rem;
+
+            .amount-button-set button:first-child {
+                padding: calc(0.5rem - 2px);
+                margin-right: 1rem;
+            }
+        }
+    }
+}
+span.add-remove-span {
+    display: inline-block;
+    padding: 0 0.5rem;
+    width: 3rem;
+    text-align: center;
+}
 .summ {
     display: flex;
     justify-content: space-between;

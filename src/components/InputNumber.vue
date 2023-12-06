@@ -47,7 +47,7 @@ input[type="number"].d-inputnumber {
 }
 
 input.d-inputnumber:focus {
+    outline: none;
     border: 2px solid var(--primary);
-    outline: 2px solid var(--primary);
 }
 </style>
