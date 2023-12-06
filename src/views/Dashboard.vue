@@ -111,7 +111,7 @@ onBeforeMount(async () => {
 .report-wrapper {
     position: relative;
     width: 100%;
-    height: 8rem;
+    height: 10rem;
     overflow-x: scroll;
     overflow-y: visible;
 
