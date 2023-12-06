@@ -263,7 +263,6 @@ onBeforeMount(async () => {
             color: var(--text-color);
             font-weight: 600;
             font-size: 0.9rem;
-            text-wrap: nowrap;
         }
     }
 }
