@@ -148,7 +148,7 @@ onBeforeMount(async () => {
             justify-content: space-between;
             align-items: center;
             padding: 2rem;
-            width: calc(100vw - 5rem);
+            width: 20rem;
             color: var(--text-primary);
 
             border-radius: var(--border-radius);

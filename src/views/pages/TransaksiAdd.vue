@@ -5,7 +5,7 @@
             <div v-for="(product, index) in products">
                 <li
                     class="product-item"
-                    :class="{ 'product-item-marked': checkCart(product.key) }"
+                    :class="{ 'product-item-marked': checkCart(product.id) }"
                 >
                     <div class="product-item-left">
                         <div class="product-item-name">
@@ -55,29 +55,29 @@
                             <Button
                                 @click="onSelectProduct(index)"
                                 label="Tambah"
-                                :class="{ hidden: checkCart(product.key) }"
+                                :class="{ hidden: checkCart(product.id) }"
                             />
                             <div
                                 class="product-item-button-one-var"
                                 v-if="product.packaging.length === 1"
-                                :class="{ hidden: !checkCart(product.key) }"
+                                :class="{ hidden: !checkCart(product.id) }"
                             >
                                 <Button
                                     icon="remove"
                                     @click.prevent="
-                                        removeProductOfCart(product.key)
+                                        removeProductOfCart(product.id)
                                     "
                                     style="padding: 0.5rem"
                                 />
                                 <span class="add-remove-span">{{
-                                    checkCart(product.key)
-                                        ? checkCart(product.key).amount
+                                    checkCart(product.id)
+                                        ? checkCart(product.id).amount
                                         : 0
                                 }}</span>
                                 <Button
                                     icon="add"
                                     @click.prevent="
-                                        addProductOfCart(product.key)
+                                        addProductOfCart(product.id)
                                     "
                                     style="padding: 0.5rem"
                                 />
@@ -85,14 +85,14 @@
                             <div
                                 class="product-item-button-many-var"
                                 v-else
-                                :class="{ hidden: !checkCart(product.key) }"
+                                :class="{ hidden: !checkCart(product.id) }"
                             >
                                 <Button
                                     icon="edit_note"
                                     :label="
-                                        checkCart(product.key)
+                                        checkCart(product.id)
                                             ? countSameProductOfCart(
-                                                  product.key
+                                                  product.id
                                               ) + ' item'
                                             : 0 + ' item'
                                     "
@@ -236,7 +236,7 @@
 
         <div class="preview-product" :class="{ hidden: !modalMode.preview }">
             <div
-                v-for="(item, index) in checkSameKeyProductofCart(key)"
+                v-for="(item, index) in checkSameIdProductofCart(id)"
                 class="preview-product-item"
             >
                 <div class="label">
@@ -263,19 +263,19 @@
                         <Button
                             icon="remove"
                             @click.prevent="
-                                removeProductOfCart(item.key, item.size)
+                                removeProductOfCart(item.id, item.size)
                             "
                             style="padding: 0.5rem"
                         />
                         <span class="add-remove-span">{{
-                            checkCart(item.key, item.size)
-                                ? checkCart(item.key, item.size).amount
+                            checkCart(item.id, item.size)
+                                ? checkCart(item.id, item.size).amount
                                 : 0
                         }}</span>
                         <Button
                             icon="add"
                             @click.prevent="
-                                addProductOfCart(item.key, item.size)
+                                addProductOfCart(item.id, item.size)
                             "
                             style="padding: 0.5rem"
                         />
@@ -309,7 +309,7 @@ const modalMode = ref({
     edit: false,
 });
 
-const key = ref("");
+const id = ref("");
 const name = ref("");
 const amount = ref(null);
 const model = ref({});
@@ -345,7 +345,7 @@ const closeModal = () => {
 
 const onSelectProduct = (index) => {
     /** set inital value on select a product */
-    key.value = products.value[index].key;
+    id.value = products.value[index].id;
     name.value = products.value[index].name;
     model.value = products.value[index].packaging[0];
     amount.value = 1;
@@ -358,7 +358,7 @@ const onSelectProduct = (index) => {
 
 const addToCart = () => {
     /** validating before push to cart */
-    if (!key.value) return;
+    if (!id.value) return;
     if (!name.value) return;
     if (isNaN(amount.value)) return;
     if (amount.value < 1) return;
@@ -366,14 +366,14 @@ const addToCart = () => {
     if (!model.value.uom) return;
     if (!model.value.price) return;
 
-    let _product = checkCart(key.value, model.value.size)
-        ? checkCart(key.value, model.value.size)
-        : checkCart(key.value)
-        ? checkCart(key.value)
+    let _product = checkCart(id.value, model.value.size)
+        ? checkCart(id.value, model.value.size)
+        : checkCart(id.value)
+        ? checkCart(id.value)
         : false;
 
     let productToAdd = {
-        key: key.value,
+        id: id.value,
         name: name.value,
         amount: amount.value,
         size: model.value.size,
@@ -383,10 +383,10 @@ const addToCart = () => {
 
     if (!modalMode.value.edit) {
         /** assign to cart */
-        if (_product.key === key.value && _product.size === model.value.size) {
+        if (_product.id === id.value && _product.size === model.value.size) {
             productToAdd.amount = productToAdd.amount + _product.amount;
             cart.value.splice(
-                checkCartIndex(key.value, model.value.size),
+                checkCartIndex(id.value, model.value.size),
                 1,
                 productToAdd
             );
@@ -404,47 +404,47 @@ const addToCart = () => {
     closeModal();
 };
 
-const checkCart = (key, size) => {
+const checkCart = (id, size) => {
     if (cart.value.length < 1) return;
     /** match ? return Obj.product : return undefined */
     let foundProduct = size
-        ? cart.value.find((p) => p.key === key && p.size === size)
-        : cart.value.find((p) => p.key === key);
+        ? cart.value.find((p) => p.id === id && p.size === size)
+        : cart.value.find((p) => p.id === id);
     if (!foundProduct) return false;
     if (foundProduct) return foundProduct;
 };
-const checkSameKeyProductofCart = (key) => {
+const checkSameIdProductofCart = (id) => {
     /** match ? return ArrObj.product : return [] */
-    return cart.value.filter((item) => item.key === key);
+    return cart.value.filter((item) => item.id === id);
 };
-const checkCartIndex = (key, size) => {
+const checkCartIndex = (id, size) => {
     return size
         ? cart.value
-              .map((item) => item.key === key && item.size === size)
+              .map((item) => item.id === id && item.size === size)
               .indexOf(true)
-        : cart.value.map((item) => item.key).indexOf(key);
+        : cart.value.map((item) => item.id).indexOf(id);
 };
-const countSameProductOfCart = (key) => {
+const countSameProductOfCart = (id) => {
     return cart.value.reduce(
-        (sum, p) => (p.key === key ? sum + p.amount : sum),
+        (sum, p) => (p.id === id ? sum + p.amount : sum),
         0
     );
 };
 
-const addProductOfCart = (key, size) => {
-    cart.value[checkCartIndex(key, size)].amount++;
+const addProductOfCart = (id, size) => {
+    cart.value[checkCartIndex(id, size)].amount++;
 };
-const removeProductOfCart = (key, size) => {
-    if (cart.value[checkCartIndex(key, size)].amount <= 1) {
-        cart.value.splice(checkCartIndex(key, size), 1);
+const removeProductOfCart = (id, size) => {
+    if (cart.value[checkCartIndex(id, size)].amount <= 1) {
+        cart.value.splice(checkCartIndex(id, size), 1);
         return;
     }
-    cart.value[checkCartIndex(key, size)].amount--;
+    cart.value[checkCartIndex(id, size)].amount--;
 };
 
 const onPreviewProductOfCart = (index, product) => {
-    let previewedProduct = checkCart(product.key, product.size);
-    key.value = previewedProduct.key;
+    let previewedProduct = checkCart(product.id, product.size);
+    id.value = previewedProduct.id;
     name.value = previewedProduct.name;
     model.value = {
         size: previewedProduct.size,
@@ -459,7 +459,7 @@ const onPreviewProductOfCart = (index, product) => {
 };
 
 const onEditProductOfCart = (item) => {
-    key.value = item.key;
+    id.value = item.id;
     name.value = item.name;
     amount.value = item.amount;
     model.value = {
@@ -469,7 +469,7 @@ const onEditProductOfCart = (item) => {
     };
     modalMode.value.edit = true;
     modalMode.value.preview = false;
-    editedCartIndex.value = checkCartIndex(item.key, item.size);
+    editedCartIndex.value = checkCartIndex(item.id, item.size);
 };
 
 const onOpenCart = () => {};
