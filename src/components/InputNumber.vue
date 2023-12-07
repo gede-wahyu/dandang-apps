@@ -8,6 +8,18 @@ const props = defineProps({
         type: Number,
         default: null,
     },
+    disabled: {
+        type: Boolean,
+        default: false,
+    },
+    prefix: {
+        type: String,
+        default: "",
+    },
+    suffix: {
+        type: String,
+        default: "",
+    },
 });
 const emit = defineEmits(["update:modelValue"]);
 </script>
@@ -15,6 +27,12 @@ const emit = defineEmits(["update:modelValue"]);
 <template>
     <input
         :value="modelValue"
+        @keypress="
+            ($event) => {
+                if ($event.which < 48 || $event.which > 57)
+                    $event.preventDefault();
+            }
+        "
         @input="
             $emit(
                 'update:modelValue',
@@ -24,8 +42,10 @@ const emit = defineEmits(["update:modelValue"]);
             )
         "
         class="d-inputnumber"
+        :class="{ 'd-inputnumber-hover': !disabled }"
         :id="inputId"
         type="number"
+        :disabled="disabled"
     />
 </template>
 
@@ -43,11 +63,15 @@ input[type="number"].d-inputnumber {
     border: 2px solid var(--surface-input-border);
     border-radius: 10px;
     padding: 0.5rem;
-    text-align: center;
-}
+    font-size: 1rem;
 
-input.d-inputnumber:focus {
-    outline: none;
+    &:focus {
+        outline: none;
+        border: 2px solid var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-a);
+    }
+}
+.d-inputnumber-hover:hover {
     border: 2px solid var(--primary);
 }
 </style>

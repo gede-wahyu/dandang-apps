@@ -1,4 +1,5 @@
 <template>
+    <InputText placeholder="Cari produk..." class="search-products" />
     <div class="card">
         <h5 style="margin-bottom: 1rem; padding: 1.5rem">Pilih Produk</h5>
         <ul class="products">
@@ -44,6 +45,11 @@
                                 v-if="product.img"
                                 :src="'/data/products/' + product.img"
                                 :alt="'product-' + index"
+                                style="
+                                    width: 100%;
+                                    height: 100%;
+                                    object-fit: cover;
+                                "
                             />
                             <div v-else class="img-none">
                                 <span class="material-symbols-outlined"
@@ -110,7 +116,12 @@
     </div>
 
     <div class="cart-wrapper">
-        <div class="cart" role="button" tabindex="-1" @click="onOpenCart">
+        <div
+            class="cart"
+            role="button"
+            tabindex="-1"
+            @click.prevent="onOpenCart()"
+        >
             <div class="cart-amount-item">
                 <span class="material-symbols-outlined"> shopping_cart </span>
                 <span
@@ -136,7 +147,13 @@
         </div>
     </div>
 
-    <Modal v-model:visible="visible" navType="back" :modalStyle="modalStyle">
+    <Modal
+        v-model:visible="visible"
+        navType="back"
+        :modalStyle="modalStyle"
+        :footerStyle="{ 'padding-bottom': '2.5rem' }"
+        :maskStyle="{ 'z-index': 4 }"
+    >
         <template #header>{{ name }}</template>
         <template #footer>
             <div class="summ" :class="{ hidden: modalMode.preview }">
@@ -172,6 +189,7 @@
                             v-model="amount"
                             inputId="amount"
                             tabindex="-1"
+                            style="text-align: center"
                         />
                     </div>
                     <Button
@@ -284,30 +302,196 @@
             </div>
         </div>
     </Modal>
+
+    <Modal
+        v-model:visible="cartVisible"
+        navType="back"
+        :modalStyle="cartModalStyle"
+        :footerStyle="{
+            padding: '1.5rem 1.5rem 2.5rem 1.5rem',
+            background: 'var(--surface-ground)',
+        }"
+        :maskStyle="{ 'z-index': 2 }"
+    >
+        <template #header> Keranjang </template>
+        <template #footer>
+            <div class="cart-footer">
+                <div class="cart-footer-button">
+                    <Button
+                        label="Buat Transaksi"
+                        @click.prevent="makeTransaction()"
+                        rounded
+                    />
+                </div>
+            </div>
+        </template>
+
+        <div class="cart-content">
+            <div class="cart-product">
+                <span class="cart-info-header">Informasi Keranjang</span>
+                <div v-for="(item, index) in cart" class="cart-product-item">
+                    <div class="cart-product-item-left">
+                        <div class="left-top">
+                            <span>{{ item.name }}</span>
+                            <span>{{ `${item.size} ${item.uom}` }}</span>
+                        </div>
+                        <div class="left-bot">
+                            <span class="price">{{
+                                new Intl.NumberFormat().format(item.price)
+                            }}</span>
+                            <div>
+                                <Button
+                                    icon="edit_note"
+                                    label="Edit"
+                                    insStyle="gap:0.25rem"
+                                    outline
+                                    @click="onEditProductOfCart(item, true)"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cart-product-item-right">
+                        <div class="image">
+                            <img
+                                v-if="item.img"
+                                :src="'/data/products/' + item.img"
+                                :alt="'product-' + index"
+                                style="
+                                    width: 100%;
+                                    height: 100%;
+                                    object-fit: cover;
+                                "
+                            />
+                            <div v-else class="img-none">
+                                <span class="material-symbols-outlined"
+                                    >image</span
+                                >
+                            </div>
+                        </div>
+                        <div class="add-remove-set">
+                            <Button
+                                @click="removeProductOfCart(item.id, item.size)"
+                                icon="remove"
+                                style="padding: 0.5rem"
+                            />
+                            <span class="add-remove-span">{{
+                                item.amount
+                            }}</span>
+                            <Button
+                                @click="addProductOfCart(item.id, item.size)"
+                                icon="add"
+                                style="padding: 0.5rem"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="cart-info">
+                <span class="cart-info-header">Informasi Transaksi</span>
+                <div class="cart-info-item">
+                    <InputText
+                        v-model="customer"
+                        inputId="customer"
+                        placeholder="Pelanggan"
+                    />
+                    <InputText
+                        v-model="address"
+                        inputId="address"
+                        placeholder="Alamat"
+                    />
+                    <InputText
+                        v-model="contact"
+                        inputId="contact"
+                        placeholder="No Telepon"
+                    />
+                    <InputNumber
+                        v-model="discount"
+                        inputId="discount"
+                        placeholder="Diskon"
+                    />
+                    <InputText
+                        v-model="payment"
+                        inputId="payment"
+                        placeholder="Metode Pembayaran"
+                    />
+                    <InputDate
+                        v-model="due"
+                        inputId="due"
+                        placeholder="Jatuh Tempo"
+                    />
+                    <InputText
+                        v-model="warehouse"
+                        inputId="warehouse"
+                        placeholder="Gudang"
+                    />
+                </div>
+            </div>
+            <div class="cart-summary">
+                <span class="cart-info-header">Ringkasan Pembayaran</span>
+                <div class="detail">
+                    <div class="flex justify-content-between">
+                        <span>Harga</span>
+                        <span>{{
+                            new Intl.NumberFormat("id-ID").format(
+                                countTotalPriceCart()
+                            )
+                        }}</span>
+                    </div>
+                    <div class="flex justify-content-between">
+                        <span>PPN ( {{ tax }}% )</span>
+                        <span>{{
+                            new Intl.NumberFormat("id-ID").format(
+                                countTaxCart()
+                            )
+                        }}</span>
+                    </div>
+                    <div class="flex justify-content-between">
+                        <span>Diskon</span>
+                        <span>{{ discount ? discount : 0 }}</span>
+                    </div>
+                    <div class="flex justify-content-between">
+                        <span>Total Pembayaran</span>
+                        <span>{{
+                            new Intl.NumberFormat().format(countBill())
+                        }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Modal>
 </template>
 
 <script setup>
 import { useProductStore } from "../../stores/ProductStore";
+import { useTransactionStore } from "../../stores/TransactionStore";
 import { ref, onBeforeMount, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
 const router = useRouter();
 const productStore = useProductStore();
+const transactionStore = useTransactionStore();
 const products = ref([]);
 const visible = ref(false);
+const cartVisible = ref(false);
 const modalStyle = ref({
     position: "fixed",
     bottom: "-1rem",
     height: "auto",
     width: "100%",
-    "padding-bottom": "2.5rem",
+});
+const cartModalStyle = ref({
+    position: "fixed",
+    bottom: "-1rem",
+    height: "96%",
+    width: "100%",
 });
 const modalMode = ref({
     view: false,
     preview: false,
     edit: false,
 });
+const editFromCart = ref(false);
 
 const id = ref("");
 const name = ref("");
@@ -318,23 +502,40 @@ const productIndex = ref(null);
 const cart = ref([]);
 const editedCartIndex = ref(null);
 
+const salesId = ref(null);
+const driverId = ref(null);
+const customer = ref(null);
+const address = ref(null);
+const contact = ref(null);
+const payment = ref(null);
+const due = ref(null);
+const tax = ref(0.11);
+const discount = ref(null);
+const warehouse = ref(null);
+
 onBeforeMount(async () => {
     await productStore.getProducts();
     products.value = productStore.products;
 });
-watch(
-    () => visible.value,
-    () => {
-        if (!visible.value) router.replace({ name: "transaction-add" });
-    }
-);
+watch(visible, () => {
+    /** if cart modal close, then route name change to default w/o query */
+    if (route.query?.cart) return;
+    else if (!visible.value) router.replace({ name: route.name });
+});
 watch(route, (newVal) => {
-    visible.value = newVal.query?.show ? true : false;
+    visible.value = newVal.query?.detail ? true : false;
+});
+watch(cartVisible, () => {
+    /** if cart modal close, then route name change to default w/o query */
+    if (!cartVisible.value) router.replace({ name: route.name });
+});
+watch(route, (newVal) => {
+    cartVisible.value = newVal.query?.cart ? true : false;
 });
 
 const openModal = () => {
     visible.value = true;
-    router.push({ name: "transaction-add", query: { show: true } });
+    router.push({ name: route.name, query: { detail: "open" } });
 };
 const closeModal = () => {
     visible.value = false;
@@ -402,6 +603,9 @@ const addToCart = () => {
 
     /** close the modal */
     closeModal();
+    if (editFromCart) {
+        onOpenCart();
+    }
 };
 
 const checkCart = (id, size) => {
@@ -458,7 +662,7 @@ const onPreviewProductOfCart = (index, product) => {
     openModal();
 };
 
-const onEditProductOfCart = (item) => {
+const onEditProductOfCart = (item, isFromCart) => {
     id.value = item.id;
     name.value = item.name;
     amount.value = item.amount;
@@ -470,9 +674,74 @@ const onEditProductOfCart = (item) => {
     modalMode.value.edit = true;
     modalMode.value.preview = false;
     editedCartIndex.value = checkCartIndex(item.id, item.size);
+    if (isFromCart) {
+        visible.value = true;
+        editFromCart.value = true;
+    }
 };
 
-const onOpenCart = () => {};
+const onOpenCart = () => {
+    if (!cart.value.length) return;
+    cartVisible.value = true;
+    router.push({ name: route.name, query: { cart: "open" } });
+};
+
+const makeTransaction = () => {
+    // if (!customer.value) return;
+    // if (!contact.value) return;
+    // if (!address.value) return;
+    if (!cart.value.length) return;
+
+    // let transaction = {
+    //     sales_id: salesId.value,
+    //     driver_id: driverId.value,
+
+    //     customer: customer.value,
+    //     nomor_telepon: contact.value,
+    //     alamat: address.value,
+
+    //     motode_transaksi: payment.value,
+    //     diskon: discount.value ? discount.value : 0,
+    //     ppn: tax.value,
+    //     jatuh_tempo: due.value,
+
+    //     details: cart.value,
+    // };
+
+    let transaction = {
+        sales_id: salesId.value ? salesId.value : 1,
+        driver_id: driverId.value ? driverId.value : 1,
+
+        customer: customer.value ? customer.value : 1,
+        nomor_telepon: contact.value ? contact.value : 1,
+        alamat: address.value ? address.value : 1,
+
+        motode_transaksi: payment.value ? payment.value : "cash",
+        diskon: discount.value ? discount.value : 0,
+        ppn: tax.value,
+        jatuh_tempo: due.value ? due.value : new Date().toJSON(),
+
+        details: cart.value,
+    };
+
+    /** post to API with store */
+    transactionStore.postTransaction(transaction);
+};
+
+const countTotalPriceCart = () => {
+    return cart.value.length
+        ? cart.value
+              .map((item) => item.amount * item.price)
+              .reduce((sum, c) => sum + c)
+        : 0;
+};
+const countTaxCart = () => {
+    return countTotalPriceCart() * 0.11;
+};
+const countBill = () => {
+    let _discount = discount.value ? discount.value : 0;
+    return countTotalPriceCart() + countTaxCart() - _discount;
+};
 
 const priceRange = (items) => {
     let lowest = new Intl.NumberFormat("id-ID").format(
@@ -504,6 +773,13 @@ ul {
 .card {
     user-select: none;
     padding: 0;
+}
+
+.search-products {
+    width: 100%;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    padding: 0.75rem;
 }
 
 .products {
@@ -596,20 +872,6 @@ ul {
                 display: flex;
                 aspect-ratio: 7/6;
                 width: 7rem;
-
-                .img-none {
-                    display: flex;
-                    width: 100%;
-                    justify-content: center;
-                    align-items: center;
-                    background-color: var(--surface-ground-darker);
-                    border-radius: var(--border-radius);
-                    border: 1px solid var(--surface-input-border);
-
-                    & > span {
-                        color: var(--text-color-secondary);
-                    }
-                }
             }
 
             .product-item-button {
@@ -635,6 +897,20 @@ ul {
         .product-item-name {
             color: var(--primary-600);
         }
+    }
+}
+
+.img-none {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--surface-ground-darker);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--surface-input-border);
+
+    & > span {
+        color: var(--text-color-secondary);
     }
 }
 
@@ -754,6 +1030,7 @@ span.add-remove-span {
         border-radius: var(--border-radius-2);
         box-shadow: var(--box-shadow-set);
         transition: all 0.2s ease;
+        user-select: none;
 
         // <!-- Pilih style cart -->
 
@@ -792,6 +1069,102 @@ span.add-remove-span {
                 font-size: 1.5rem;
             }
         }
+    }
+}
+
+.cart-footer {
+    .cart-footer-button {
+        width: 100%;
+        button {
+            width: 100%;
+        }
+    }
+}
+
+.cart-content {
+    .cart-info {
+        display: flex;
+        flex-direction: column;
+        margin-top: 2rem;
+        .cart-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+    .cart-product {
+        display: flex;
+        flex-direction: column;
+        user-select: none;
+
+        .cart-product-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1.5rem 0;
+            border-bottom: 2px dashed var(--text-color-secondary);
+            &:first-of-type {
+                border-top: 2px dashed var(--text-color-secondary);
+            }
+
+            .cart-product-item-left {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+
+                .left-top {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+
+                    & span:first-child {
+                        text-transform: capitalize;
+                    }
+
+                    & span:first-child {
+                        font-weight: 600;
+                    }
+                }
+                .left-bot {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+
+                    button {
+                        padding: calc(0.5rem - 2px);
+                    }
+                }
+            }
+            .cart-product-item-right {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+                .image {
+                    display: flex;
+                    aspect-ratio: 7/6;
+                    width: 7rem;
+                }
+            }
+        }
+    }
+    .cart-summary {
+        margin-top: 2rem;
+        display: flex;
+        flex-direction: column;
+        .detail {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            & > div:last-child {
+                font-weight: 600;
+                padding-top: 0.5rem;
+                border-top: 2px dashed var(--text-color-secondary);
+            }
+        }
+    }
+
+    .cart-info-header {
+        font-weight: 600;
+        margin-bottom: 1rem;
     }
 }
 </style>

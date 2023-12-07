@@ -102,6 +102,7 @@ onBeforeMount(async () => {
 .greeting {
     margin: 0 0 1.25rem 0.5rem;
     font-weight: 500;
+    user-select: none;
     .greet {
         font-size: 1.75rem;
         font-weight: 700;
@@ -217,6 +218,7 @@ onBeforeMount(async () => {
     margin-bottom: 1.25rem;
     padding: 0;
     list-style: none;
+    user-select: none;
 
     .layout-menuitem {
         background-color: var(--surface-card);
