@@ -5,11 +5,18 @@
         :name="inputId"
         :id="inputId"
         :placeholder="placeholder"
+        @input="emit('update:modelValue', $event.target.value)"
+        @keypress="emit('type')"
     />
 </template>
 
 <script setup>
+const emit = defineEmits(["type", "update:modelValue"]);
 const props = defineProps({
+    modelValue: {
+        type: String,
+        default: "",
+    },
     inputId: {
         type: String,
         default: "",

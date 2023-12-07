@@ -1,9 +1,19 @@
 <template>
-    <InputText placeholder="Cari produk..." class="search-products" />
+    <InputText
+        placeholder="Cari produk..."
+        class="search-products"
+        v-model="searchProduct"
+        @type="searchOnType()"
+    />
     <div class="card">
         <h5 style="margin-bottom: 1rem; padding: 1.5rem">Pilih Produk</h5>
         <ul class="products">
-            <div v-for="(product, index) in products">
+            <div
+                v-for="(product, index) in products"
+                :class="{
+                    hidden: checkSearch(searchOnType(), product.id),
+                }"
+            >
                 <li
                     class="product-item"
                     :class="{ 'product-item-marked': checkCart(product.id) }"
@@ -498,6 +508,7 @@ const name = ref("");
 const amount = ref(null);
 const model = ref({});
 
+const searchProduct = ref("");
 const productIndex = ref(null);
 const cart = ref([]);
 const editedCartIndex = ref(null);
@@ -533,6 +544,15 @@ watch(route, (newVal) => {
     cartVisible.value = newVal.query?.cart ? true : false;
 });
 
+const searchOnType = () => {
+    return products.value.filter((item) =>
+        item.name.includes(searchProduct.value)
+    );
+};
+const checkSearch = (target, id) => {
+    // console.log(target);
+    return !target.map((item) => item.id).includes(id);
+};
 const openModal = () => {
     visible.value = true;
     router.push({ name: route.name, query: { detail: "open" } });
