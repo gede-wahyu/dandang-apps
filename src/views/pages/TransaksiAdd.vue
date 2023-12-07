@@ -448,7 +448,7 @@
                         }}</span>
                     </div>
                     <div class="flex justify-content-between">
-                        <span>PPN ( {{ tax }}% )</span>
+                        <span>PPN ( {{ tax * 100 }}% )</span>
                         <span>{{
                             new Intl.NumberFormat("id-ID").format(
                                 countTaxCart()
