@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import AppLayout from "../layout/AppLayout.vue";
+import { useAuthStore } from "../stores/AuthStore";
 
 const _router = [
     {
@@ -84,5 +85,22 @@ const router = createRouter({
         }
     ],
 });
+
+
+router.beforeEach((to, from, next) => {
+    const authStore = useAuthStore()
+    let isAuthenticated = authStore.auth.authenticated;
+
+
+    if(!isAuthenticated && to.name !== 'login') {
+        next({name: 'login'})
+    }
+    else if(isAuthenticated && to.name === 'login') {
+        next({name: 'home'})
+    }
+    else {
+        next()
+    }
+})
 
 export default router;

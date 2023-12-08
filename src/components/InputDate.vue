@@ -2,12 +2,14 @@
     <input
         class="d-inputdate"
         :class="{ 'd-inputdate-null': modelValue === null }"
-        type="date"
+        :type="placeholder ? 'text' : 'date'"
         :name="inputId"
         :id="inputId"
         :placeholder="placeholder"
         :value="modelValue"
         @input="$emit('update:modelValue')"
+        onfocus="this.type = 'date'"
+        onblur="this.type = 'text'"
     />
 </template>
 

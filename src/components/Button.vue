@@ -1,6 +1,6 @@
 <template>
     <!-- <div> -->
-    <button class="d-button" :class="btnClass">
+    <button class="d-button" :class="btnClass" :disabled="disabled">
         <div
             class="d-button-ins"
             :class="{ 'd-button-gap': icon && label }"
@@ -44,6 +44,10 @@ const props = defineProps({
         type: String,
         default: "",
     },
+    disabled: {
+        type: Boolean,
+        default: false,
+    },
 });
 const btnClass = ref({
     "d-button-rounded": props.rounded && props.label,
@@ -55,6 +59,10 @@ const btnClass = ref({
     "d-button-info": props.severity === "info",
     "d-button-success": props.severity === "success",
     "d-button-unknown": props.severity === "unknown",
+    "d-button-focus": !props.disabled,
+    "d-button-active": !props.disabled,
+    "d-button-hover": !props.disabled,
+    "d-button-disabled": props.disabled,
 });
 </script>
 
@@ -67,6 +75,7 @@ const btnClass = ref({
     font-weight: 700;
     user-select: none;
     transition: filter, box-shadow 0.2s ease;
+    outline: none;
 
     .d-button-ins {
         display: flex;
@@ -103,16 +112,19 @@ const btnClass = ref({
 .d-button-gap {
     gap: 0.5rem;
 }
-.d-button:hover {
+.d-button-hover:hover {
     filter: brightness(85%);
 }
-.d-button:active {
+.d-button-active:active {
     filter: brightness(75%);
+}
+.d-button-disabled {
+    filter: saturate(60%);
 }
 .d-button-primary {
     background: var(--primary);
 
-    &.d-button:focus {
+    &.d-button-focus:focus {
         box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 1),
             0 0 0 3px var(--primary-a);
         outline: 1px solid var(--primary);
@@ -121,7 +133,7 @@ const btnClass = ref({
 .d-button-success {
     background: var(--color-success);
 
-    &.d-button:focus {
+    &.d-button-focus:focus {
         box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 1),
             0 0 0 3px var(--color-success-a);
         outline: 1px solid var(--color-success);
@@ -130,7 +142,7 @@ const btnClass = ref({
 .d-button-danger {
     background: var(--color-danger);
 
-    &.d-button:focus {
+    &.d-button-focus:focus {
         box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 1),
             0 0 0 3px var(--color-danger-a);
         outline: 1px solid var(--color-danger);
@@ -139,7 +151,7 @@ const btnClass = ref({
 .d-button-warning {
     background: var(--color-warning);
 
-    &.d-button:focus {
+    &.d-button-focus:focus {
         box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 1),
             0 0 0 3px var(--color-warning-a);
         outline: 1px solid var(--color-warning);
@@ -148,7 +160,7 @@ const btnClass = ref({
 .d-button-info {
     background: var(--color-info);
 
-    &.d-button:focus {
+    &.d-button-focus:focus {
         box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 1),
             0 0 0 3px var(--color-info-a);
         outline: 1px solid var(--color-info);
@@ -157,7 +169,7 @@ const btnClass = ref({
 .d-button-unknown {
     background: var(--color-unknown);
 
-    &.d-button:focus {
+    &.d-button-focus:focus {
         box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 1),
             0 0 0 3px var(--color-unknown-a);
         outline: 1px solid var(--color-unknown);

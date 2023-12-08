@@ -7,6 +7,7 @@
             :name="inputId"
             :id="inputId"
             :placeholder="placeholder"
+            v-bind="$attrs"
             @input="emit('update:modelValue', $event.target.value)"
             @keypress="emit('type')"
         />

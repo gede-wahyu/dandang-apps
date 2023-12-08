@@ -742,7 +742,7 @@ const makeTransaction = () => {
         nomor_telepon: contact.value ? contact.value : 1,
         alamat: address.value ? address.value : 1,
 
-        motode_transaksi: payment.value ? payment.value : "cash",
+        motode_pembayaran: payment.value ? payment.value : "cash",
         diskon: discount.value ? discount.value : 0,
         ppn: tax.value,
         jatuh_tempo: due.value ? due.value : new Date().toJSON(),

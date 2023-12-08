@@ -1,6 +1,6 @@
 <template>
     <div class="greeting">
-        <span class="greet">Hi Wahyu,</span>
+        <span class="greet">Hi {{ authStore.auth.user.name }},</span>
         <div class="span message">Welcome back!</div>
     </div>
 
@@ -83,10 +83,12 @@
 <script setup>
 import { useMenuItemStore } from "../stores/MenuItemStore";
 import { useReportStore } from "../stores/ReportStore";
+import { useAuthStore } from "../stores/AuthStore";
 import { ref, onBeforeMount } from "vue";
 
 const menuItemStore = useMenuItemStore();
 const reportStore = useReportStore();
+const authStore = useAuthStore();
 
 const reports = ref([]);
 
@@ -104,6 +106,7 @@ onBeforeMount(async () => {
     font-weight: 500;
     user-select: none;
     .greet {
+        text-transform: capitalize;
         font-size: 1.75rem;
         font-weight: 700;
     }

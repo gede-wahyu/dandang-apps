@@ -9,21 +9,21 @@
                 </div>
                 <div class="login-card-form">
                     <div>
-                        <label for="email">Email</label>
+                        <label for="username">Username / Email</label>
                         <span class="d-sideicon-set">
                             <span class="material-symbols-outlined">
-                                email
+                                person
                             </span>
                             <InputText
-                                v-model="email"
-                                v-bind="emailAttrs"
-                                inputId="email"
+                                v-model="username"
+                                v-bind="usernameAttrs"
+                                inputId="username"
                                 class="d-input-iconleft"
                                 style="width: 100%"
                             />
                         </span>
                         <small class="d-invalid">{{
-                            errors.email || "&nbsp"
+                            errors.username || "&nbsp"
                         }}</small>
                     </div>
                     <div>
@@ -46,7 +46,14 @@
                     </div>
                 </div>
                 <div class="login-card-footer">
-                    <Button type="submit" icon="login" label="Masuk" />
+                    <Button
+                        v-if="authStore.users < 1"
+                        type="submit"
+                        icon="login"
+                        label="Masuk"
+                        disabled
+                    />
+                    <Button v-else type="submit" icon="login" label="Masuk" />
                 </div>
             </form>
         </div>
@@ -78,26 +85,37 @@
 </template>
 
 <script setup>
+import { onBeforeMount } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../../stores/AuthStore";
 import { useForm } from "vee-validate";
 import * as yup from "yup";
 
+const router = useRouter();
+const authStore = useAuthStore();
 const { errors, handleSubmit, defineField } = useForm({
     validationSchema: yup.object({
-        email: yup
-            .string()
-            .email("email harus valid")
-            .required("email wajib diisi"),
+        username: yup.string().required("username wajib diisi"),
         password: yup
             .string()
             .min(6, "minimal 6 karakter")
             .required("password wajib diisi"),
     }),
 });
-const [email, emailAttrs] = defineField("email");
+const [username, usernameAttrs] = defineField("username");
 const [password, passwordAttrs] = defineField("password");
 
+onBeforeMount(async () => {
+    await authStore.getUsers();
+});
+
 const onSubmit = handleSubmit(() => {
-    console.log(email.value, password.value);
+    let auth = authStore.login(username.value, password.value);
+    if (auth.authenticated) {
+        router.push({ name: "home" });
+    } else {
+        console.log("login gagal");
+    }
 });
 
 //
@@ -156,7 +174,7 @@ const onSubmit = handleSubmit(() => {
 
         .login-card-header {
             h5 {
-                margin: 0;
+                margin-bottom: 1rem;
                 padding-top: 1rem;
                 text-align: center;
             }
@@ -169,7 +187,6 @@ const onSubmit = handleSubmit(() => {
             display: flex;
             flex-direction: column;
             padding: 1rem 0;
-            gap: 0.5rem;
 
             div {
                 display: flex;
