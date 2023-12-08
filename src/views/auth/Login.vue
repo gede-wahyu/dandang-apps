@@ -1,5 +1,6 @@
 <template>
     <div class="login-wrapper">
+        <div class="apps">dandang apps</div>
         <div class="login-card">
             <form @submit.prevent="onSubmit()">
                 <div class="login-card-header">
@@ -49,6 +50,30 @@
                 </div>
             </form>
         </div>
+        <div class="footer">
+            <span>Omah IT</span>
+            <div class="contact">
+                <a
+                    tabindex="-1"
+                    href="https://www.linkedin.com/in/i-gede-wahyu-sedana/"
+                    ><i class="pi pi-linkedin"
+                /></a>
+                <span>|</span>
+                <a tabindex="-1" href="https://github.com/gede-wahyu"
+                    ><i class="pi pi-github"
+                /></a>
+                <span>|</span>
+                <a
+                    tabindex="-1"
+                    href="https://www.linkedin.com/in/thomas-edwin-suryo-prayogo-02670a212/"
+                    ><i class="pi pi-linkedin"
+                /></a>
+                <span>|</span>
+                <a tabindex="-1" href="https://github.com/Thomasborn"
+                    ><i class="pi pi-github"
+                /></a>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -81,11 +106,45 @@ const onSubmit = handleSubmit(() => {
 <style scoped lang="scss">
 .login-wrapper {
     width: 100vw;
-    height: 100vh;
+    height: 100dvh;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    justify-content: space-between;
     padding: 0 1.5rem;
     background: linear-gradient((to right bottom, #46c4ff, #58e0a9));
+
+    .apps {
+        padding-top: 2rem;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .footer {
+        padding-bottom: 2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 0.5rem;
+        text-align: center;
+        text-transform: uppercase;
+
+        & > span {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .contact {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            gap: 0.5rem;
+            a,
+            span {
+                color: var(--text-color);
+            }
+        }
+    }
 
     .login-card {
         display: flex;
@@ -134,6 +193,30 @@ const onSubmit = handleSubmit(() => {
                 width: 8rem;
             }
         }
+    }
+}
+/** tablet */
+@media screen and (min-width: 768px) {
+    .login-wrapper {
+        padding: 0 12rem;
+    }
+}
+/** smaller laptop */
+@media screen and (min-width: 992px) {
+    .login-wrapper {
+        padding: 0 24rem;
+    }
+}
+/** wider laptop */
+@media screen and (min-width: 1200px) {
+    .login-wrapper {
+        padding: 0 30rem;
+    }
+}
+/** desktop */
+@media screen and (min-width: 1400px) {
+    .login-wrapper {
+        padding: 0 34rem;
     }
 }
 </style>
