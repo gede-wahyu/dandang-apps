@@ -11,6 +11,7 @@ import Modal from "./components/Modal.vue";
 import Tag from "./components/Tag.vue";
 import InputText from './components/InputText.vue';
 import InputNumber from "./components/InputNumber.vue";
+import InputPassword from './components/InputPassword.vue'
 import InputDate from './components/InputDate.vue'
 
 const pinia = createPinia();
@@ -25,6 +26,7 @@ app.component("Modal", Modal);
 app.component("Tag", Tag);
 app.component("InputText", InputText);
 app.component("InputNumber", InputNumber);
+app.component('InputPassword', InputPassword);
 app.component('InputDate', InputDate);
 
 app.mount("#app");

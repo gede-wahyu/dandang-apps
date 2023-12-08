@@ -515,9 +515,12 @@ const editedCartIndex = ref(null);
 
 const salesId = ref(null);
 const driverId = ref(null);
+
+const curtomerId = ref(null);
 const customer = ref(null);
 const address = ref(null);
 const contact = ref(null);
+
 const payment = ref(null);
 const due = ref(null);
 const tax = ref(0.11);
@@ -710,6 +713,9 @@ const makeTransaction = () => {
     // if (!customer.value) return;
     // if (!contact.value) return;
     // if (!address.value) return;
+    // if (customerId.value) return;
+    // if (!salesId.value) return;
+    // if (!driverId.value) return;
     if (!cart.value.length) return;
 
     // let transaction = {

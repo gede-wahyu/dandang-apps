@@ -77,6 +77,11 @@ const router = createRouter({
             name: "coming-soon",
             component: () => import("../views/pages/dev/ComingSoon.vue"),
         },
+        {
+            path: '/login',
+            name: 'login',
+            component: () => import('../views/auth/Login.vue')
+        }
     ],
 });
 

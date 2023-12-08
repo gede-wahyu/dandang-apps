@@ -40,6 +40,34 @@
     }
 }
 
+.d-sideicon-set {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    & span:first-child, i:first-child {
+        position: absolute;
+        width: 2rem;
+        color: var(--text-color-secondary);
+        left: 0.75rem;
+        z-index: 2;
+    }
+
+    .d-input-iconleft {
+        padding-left: 3rem !important;
+    }
+
+    .d-input-iconright {
+        padding-right: 3rem !important;
+    }
+}
+
+.d-invalid {
+    color: var(--color-danger);
+}
+
+
+
 .d-modal-open {
     overflow: hidden;
 }
