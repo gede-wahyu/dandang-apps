@@ -549,7 +549,9 @@ watch(route, (newVal) => {
 
 const searchOnType = () => {
     return products.value.filter((item) =>
-        item.name.includes(searchProduct.value)
+        item.name
+            .toLocaleLowerCase()
+            .includes(searchProduct.value.toLocaleLowerCase())
     );
 };
 const checkSearch = (target, id) => {
