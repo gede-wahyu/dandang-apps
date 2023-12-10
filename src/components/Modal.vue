@@ -1,6 +1,6 @@
 <template>
     <div v-if="visible" class="d-modal-mask" :style="maskStyle">
-        <div class="d-modal" :style="modalStyle">
+        <div class="d-modal" :style="modalStyle" :class="modalClass">
             <div class="d-modal-header" :style="headerStyle">
                 <div class="d-modal-header-left">
                     <div
@@ -61,8 +61,12 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    modalClass: {
+        type: String,
+        default: "",
+    },
     modalStyle: {
-        type: Object,
+        type: Object || String,
         default: () => {},
     },
     headerStyle: {

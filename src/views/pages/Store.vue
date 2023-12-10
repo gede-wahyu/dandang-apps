@@ -1,5 +1,5 @@
 <template>
-    <div class="card">
+    <div class="card" style="padding-bottom: 50rem">
         <h5>Daftar Toko</h5>
         <p>
             Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eius
@@ -12,7 +12,9 @@
                 class="flex justify-content-end"
                 severity="warning"
                 label="Click me"
+                @click="console.log(suggest)"
             />
         </div>
     </div>
 </template>
+<script setup></script>

@@ -5,6 +5,7 @@
         :name="inputId"
         :id="inputId"
         :placeholder="placeholder"
+        :value="modelValue"
         @input="emit('update:modelValue', $event.target.value)"
         @keypress="emit('type')"
     />
@@ -28,7 +29,7 @@ const props = defineProps({
 });
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .d-inputtext {
     font-family: var(--font-family);
     border: 2px solid var(--surface-input-border);

@@ -11,7 +11,7 @@
             <div
                 v-for="(product, index) in products"
                 :class="{
-                    hidden: checkSearch(searchOnType(), product.id),
+                    hidden: hideNonResultSearch(searchOnType(), product.id),
                 }"
             >
                 <li
@@ -399,37 +399,59 @@
             <div class="cart-info">
                 <span class="cart-info-header">Informasi Transaksi</span>
                 <div class="cart-info-item">
-                    <InputText
+                    <div class="flex" style="gap: 0.75rem">
+                        <CheckBox v-model="newCustomer" />
+                        <label>Pelanggan Baru</label>
+                    </div>
+                    <AutoComplete
+                        v-if="!newCustomer"
                         v-model="customer"
-                        inputId="customer"
                         placeholder="Pelanggan"
+                        :suggestion="customers"
+                        object
+                        firstKey="name"
+                        secondKey="code"
+                        separator="-"
+                        forceComplete
                     />
                     <InputText
+                        v-if="newCustomer"
+                        v-model="customerName"
+                        inputId="customerName"
+                        placeholder="Nama Pelanggan"
+                    />
+                    <InputText
+                        v-if="newCustomer"
                         v-model="address"
                         inputId="address"
                         placeholder="Alamat"
                     />
                     <InputText
+                        v-if="newCustomer"
                         v-model="contact"
                         inputId="contact"
                         placeholder="No Telepon"
                     />
                     <InputNumber
+                        v-if="authStore.auth.roleId <= 2"
                         v-model="discount"
                         inputId="discount"
                         placeholder="Diskon"
                     />
                     <InputText
+                        v-if="authStore.auth.roleId <= 2"
                         v-model="payment"
                         inputId="payment"
                         placeholder="Metode Pembayaran"
                     />
                     <InputDate
+                        v-if="authStore.auth.roleId <= 2"
                         v-model="due"
                         inputId="due"
                         placeholder="Jatuh Tempo"
                     />
                     <InputText
+                        v-if="authStore.auth.roleId <= 2"
                         v-model="warehouse"
                         inputId="warehouse"
                         placeholder="Gudang"
@@ -473,15 +495,20 @@
 
 <script setup>
 import { useProductStore } from "../../stores/ProductStore";
+import { useCustomerStore } from "../../stores/CustomerStore";
 import { useTransactionStore } from "../../stores/TransactionStore";
-import { ref, onBeforeMount, watch } from "vue";
+import { useAuthStore } from "../../stores/AuthStore";
+import { ref, onBeforeMount, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
 const router = useRouter();
 const productStore = useProductStore();
+const customerStore = useCustomerStore();
 const transactionStore = useTransactionStore();
+const authStore = useAuthStore();
 const products = ref([]);
+const customers = ref([]);
 const visible = ref(false);
 const cartVisible = ref(false);
 const modalStyle = ref({
@@ -516,20 +543,29 @@ const editedCartIndex = ref(null);
 const salesId = ref(null);
 const driverId = ref(null);
 
-const curtomerId = ref(null);
+const newCustomer = ref(false);
 const customer = ref(null);
+const customerName = ref(null);
 const address = ref(null);
 const contact = ref(null);
 
 const payment = ref(null);
 const due = ref(null);
-const tax = ref(0.11);
+const tax = ref(null);
 const discount = ref(null);
 const warehouse = ref(null);
 
 onBeforeMount(async () => {
     await productStore.getProducts();
     products.value = productStore.products;
+    await customerStore.getCustomers();
+    customers.value = customerStore.customers;
+});
+onMounted(() => {
+    if (authStore.auth.roleId === 1) tax.value = 0.11;
+    else if (authStore.auth.roleId === 2) tax.value = 0.11;
+    else tax.value = 0;
+    salesId.value = authStore.auth.user.id;
 });
 watch(visible, () => {
     /** if cart modal close, then route name change to default w/o query */
@@ -554,8 +590,7 @@ const searchOnType = () => {
             .includes(searchProduct.value.toLocaleLowerCase())
     );
 };
-const checkSearch = (target, id) => {
-    // console.log(target);
+const hideNonResultSearch = (target, id) => {
     return !target.map((item) => item.id).includes(id);
 };
 const openModal = () => {
@@ -712,48 +747,41 @@ const onOpenCart = () => {
 };
 
 const makeTransaction = () => {
-    // if (!customer.value) return;
-    // if (!contact.value) return;
-    // if (!address.value) return;
-    // if (customerId.value) return;
-    // if (!salesId.value) return;
-    // if (!driverId.value) return;
+    if (newCustomer.value) {
+        customer.value = {
+            customer_baru: newCustomer.value,
+            nama_customer: customerName.value,
+            alamat_customer: address.value,
+            nomor_telepon: contact.value,
+        };
+    }
+
+    if (!salesId.value) return;
     if (!cart.value.length) return;
 
-    // let transaction = {
-    //     sales_id: salesId.value,
-    //     driver_id: driverId.value,
-
-    //     customer: customer.value,
-    //     nomor_telepon: contact.value,
-    //     alamat: address.value,
-
-    //     motode_transaksi: payment.value,
-    //     diskon: discount.value ? discount.value : 0,
-    //     ppn: tax.value,
-    //     jatuh_tempo: due.value,
-
-    //     details: cart.value,
-    // };
-
     let transaction = {
-        sales_id: salesId.value ? salesId.value : 1,
-        driver_id: driverId.value ? driverId.value : 1,
+        sales_id: salesId.value,
+        driver_id: driverId.value,
 
-        customer: customer.value ? customer.value : 1,
-        nomor_telepon: contact.value ? contact.value : 1,
-        alamat: address.value ? address.value : 1,
+        customer: customer.value,
 
-        motode_pembayaran: payment.value ? payment.value : "cash",
+        motode_transaksi: payment.value ? payment.value : "cash",
         diskon: discount.value ? discount.value : 0,
         ppn: tax.value,
         jatuh_tempo: due.value ? due.value : new Date().toJSON(),
+        gudang: warehouse.value,
 
         details: cart.value,
     };
 
     /** post to API with store */
     transactionStore.postTransaction(transaction);
+
+    /** wait for response */
+    // ??????????????????
+
+    /** if success redirect to home */
+    router.push({ name: "home" });
 };
 
 const countTotalPriceCart = () => {
@@ -764,7 +792,7 @@ const countTotalPriceCart = () => {
         : 0;
 };
 const countTaxCart = () => {
-    return countTotalPriceCart() * 0.11;
+    return countTotalPriceCart() * tax.value;
 };
 const countBill = () => {
     let _discount = discount.value ? discount.value : 0;
@@ -1193,6 +1221,20 @@ span.add-remove-span {
     .cart-info-header {
         font-weight: 600;
         margin-bottom: 1rem;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .search-products {
+        width: 20rem;
+    }
+    .products {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .cart-wrapper {
+        padding: 0 3rem 1.5rem 70rem;
     }
 }
 </style>

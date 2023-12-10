@@ -213,7 +213,7 @@ const onSubmit = handleSubmit(() => {
     }
 }
 /** tablet */
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 720px) {
     .login-wrapper {
         padding: 0 12rem;
     }

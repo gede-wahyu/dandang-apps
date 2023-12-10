@@ -1,6 +1,9 @@
 <template>
     <div class="greeting">
-        <span class="greet">Hi {{ authStore.auth.user.name }},</span>
+        <span class="greet"
+            >Hi
+            {{ authStore.auth.user ? authStore.auth.user.name : "User" }},</span
+        >
         <div class="span message">Welcome back!</div>
     </div>
 
@@ -268,6 +271,37 @@ onBeforeMount(async () => {
             color: var(--text-color);
             font-weight: 600;
             font-size: 0.9rem;
+        }
+    }
+}
+
+@media screen and (min-width: 720px) {
+    .layout-menu {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 1.75rem;
+    }
+}
+@media screen and (min-width: 992px) {
+    .layout-menu {
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+        .layout-menuitem {
+            a {
+                padding: 2rem;
+            }
+        }
+    }
+
+    .report-wrapper {
+        display: flex;
+        width: 100%;
+        .report {
+            position: static;
+            display: flex;
+            width: 100%;
+            gap: 2rem;
+            .report-item {
+                width: 100%;
+            }
         }
     }
 }

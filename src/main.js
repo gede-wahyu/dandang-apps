@@ -13,6 +13,9 @@ import InputText from './components/InputText.vue';
 import InputNumber from "./components/InputNumber.vue";
 import InputPassword from './components/InputPassword.vue'
 import InputDate from './components/InputDate.vue'
+import CheckBox from './components/CheckBox.vue'
+import Dropdown from './components/Dropdown.vue'
+import AutoComplete from './components/AutoComplete.vue'
 
 const pinia = createPinia();
 const app = createApp(App);
@@ -28,5 +31,8 @@ app.component("InputText", InputText);
 app.component("InputNumber", InputNumber);
 app.component('InputPassword', InputPassword);
 app.component('InputDate', InputDate);
+app.component('CheckBox', CheckBox);
+app.component('Dropdown', Dropdown);
+app.component('AutoComplete', AutoComplete);
 
 app.mount("#app");

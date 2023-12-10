@@ -1,0 +1,23 @@
+@media screen and (min-width: 720px) {
+    .layout-topbar {
+        padding: 1.75rem 2rem;
+    }
+    .layout-main-container {
+        padding: 0 2rem 7rem 2rem;
+    }
+    .layout-bottombar {
+        padding: 0 7rem;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .layout-topbar {
+        padding: 2rem 3rem;
+    }
+    .layout-main-container {
+        padding: 0 3rem 7rem 3rem;
+    }
+    .layout-bottombar {
+        padding: 0 30rem;
+    }
+}
