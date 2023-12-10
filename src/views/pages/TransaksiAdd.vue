@@ -161,7 +161,7 @@
         v-model:visible="visible"
         navType="back"
         :modalStyle="modalStyle"
-        :footerStyle="{ 'padding-bottom': '2.5rem' }"
+        :footerStyle="footerModalStyle"
         :maskStyle="{ 'z-index': 4 }"
     >
         <template #header>{{ name }}</template>
@@ -317,10 +317,7 @@
         v-model:visible="cartVisible"
         navType="back"
         :modalStyle="cartModalStyle"
-        :footerStyle="{
-            padding: '1.5rem 1.5rem 2.5rem 1.5rem',
-            background: 'var(--surface-ground)',
-        }"
+        :footerStyle="cartFooterModalStyle"
         :maskStyle="{ 'z-index': 2 }"
     >
         <template #header> Keranjang </template>
@@ -396,96 +393,99 @@
                     </div>
                 </div>
             </div>
-            <div class="cart-info">
-                <span class="cart-info-header">Informasi Transaksi</span>
-                <div class="cart-info-item">
-                    <div class="flex" style="gap: 0.75rem">
-                        <CheckBox v-model="newCustomer" />
-                        <label>Pelanggan Baru</label>
+            <div>
+                <div class="cart-info">
+                    <span class="cart-info-header">Informasi Transaksi</span>
+                    <div class="cart-info-item">
+                        <div class="flex" style="gap: 0.75rem">
+                            <CheckBox v-model="newCustomer" />
+                            <label>Pelanggan Baru</label>
+                        </div>
+                        <AutoComplete
+                            v-if="!newCustomer"
+                            v-model="customer"
+                            placeholder="Pelanggan"
+                            :suggestion="customers"
+                            object
+                            firstKey="name"
+                            secondKey="code"
+                            separator="-"
+                            forceComplete
+                        />
+                        <InputText
+                            v-if="newCustomer"
+                            v-model="customerName"
+                            inputId="customerName"
+                            placeholder="Nama Pelanggan"
+                        />
+                        <InputText
+                            v-if="newCustomer"
+                            v-model="address"
+                            inputId="address"
+                            placeholder="Alamat"
+                        />
+                        <InputText
+                            v-if="newCustomer"
+                            v-model="contact"
+                            inputId="contact"
+                            placeholder="No Telepon"
+                        />
+                        <InputNumber
+                            v-if="authStore.auth.roleId <= 2"
+                            v-model="discount"
+                            inputId="discount"
+                            placeholder="Diskon"
+                        />
+                        <InputText
+                            v-if="authStore.auth.roleId <= 2"
+                            v-model="payment"
+                            inputId="payment"
+                            placeholder="Metode Pembayaran"
+                        />
+                        <InputDate
+                            v-if="authStore.auth.roleId <= 2"
+                            v-model="due"
+                            inputId="due"
+                            placeholder="Jatuh Tempo"
+                            style="width: 100%"
+                        />
+                        <InputText
+                            v-if="authStore.auth.roleId <= 2"
+                            v-model="warehouse"
+                            inputId="warehouse"
+                            placeholder="Gudang"
+                        />
                     </div>
-                    <AutoComplete
-                        v-if="!newCustomer"
-                        v-model="customer"
-                        placeholder="Pelanggan"
-                        :suggestion="customers"
-                        object
-                        firstKey="name"
-                        secondKey="code"
-                        separator="-"
-                        forceComplete
-                    />
-                    <InputText
-                        v-if="newCustomer"
-                        v-model="customerName"
-                        inputId="customerName"
-                        placeholder="Nama Pelanggan"
-                    />
-                    <InputText
-                        v-if="newCustomer"
-                        v-model="address"
-                        inputId="address"
-                        placeholder="Alamat"
-                    />
-                    <InputText
-                        v-if="newCustomer"
-                        v-model="contact"
-                        inputId="contact"
-                        placeholder="No Telepon"
-                    />
-                    <InputNumber
-                        v-if="authStore.auth.roleId <= 2"
-                        v-model="discount"
-                        inputId="discount"
-                        placeholder="Diskon"
-                    />
-                    <InputText
-                        v-if="authStore.auth.roleId <= 2"
-                        v-model="payment"
-                        inputId="payment"
-                        placeholder="Metode Pembayaran"
-                    />
-                    <InputDate
-                        v-if="authStore.auth.roleId <= 2"
-                        v-model="due"
-                        inputId="due"
-                        placeholder="Jatuh Tempo"
-                    />
-                    <InputText
-                        v-if="authStore.auth.roleId <= 2"
-                        v-model="warehouse"
-                        inputId="warehouse"
-                        placeholder="Gudang"
-                    />
                 </div>
-            </div>
-            <div class="cart-summary">
-                <span class="cart-info-header">Ringkasan Pembayaran</span>
-                <div class="detail">
-                    <div class="flex justify-content-between">
-                        <span>Harga</span>
-                        <span>{{
-                            new Intl.NumberFormat("id-ID").format(
-                                countTotalPriceCart()
-                            )
-                        }}</span>
-                    </div>
-                    <div class="flex justify-content-between">
-                        <span>PPN ( {{ tax * 100 }}% )</span>
-                        <span>{{
-                            new Intl.NumberFormat("id-ID").format(
-                                countTaxCart()
-                            )
-                        }}</span>
-                    </div>
-                    <div class="flex justify-content-between">
-                        <span>Diskon</span>
-                        <span>{{ discount ? discount : 0 }}</span>
-                    </div>
-                    <div class="flex justify-content-between">
-                        <span>Total Pembayaran</span>
-                        <span>{{
-                            new Intl.NumberFormat().format(countBill())
-                        }}</span>
+                <div class="cart-summary">
+                    <span class="cart-info-header">Ringkasan Pembayaran</span>
+                    <div class="detail">
+                        <div class="flex justify-content-between">
+                            <span>Harga</span>
+                            <span>{{
+                                new Intl.NumberFormat("id-ID").format(
+                                    countTotalPriceCart()
+                                )
+                            }}</span>
+                        </div>
+                        <div class="flex justify-content-between">
+                            <span>PPN ( {{ tax * 100 }}% )</span>
+                            <span>{{
+                                new Intl.NumberFormat("id-ID").format(
+                                    countTaxCart()
+                                )
+                            }}</span>
+                        </div>
+                        <div class="flex justify-content-between">
+                            <span>Diskon</span>
+                            <span>{{ discount ? discount : 0 }}</span>
+                        </div>
+                        <div class="flex justify-content-between">
+                            <span>Total Pembayaran</span>
+                            <span>{{
+                                new Intl.NumberFormat().format(countBill())
+                            }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -528,6 +528,13 @@ const modalMode = ref({
     preview: false,
     edit: false,
 });
+const footerModalStyle = ref({
+    "padding-bottom": "2.5rem",
+});
+const cartFooterModalStyle = ref({
+    padding: "1.5rem 1.5rem 2.5rem 1.5rem",
+    background: "var(--surface-ground)",
+});
 const editFromCart = ref(false);
 
 const id = ref("");
@@ -560,6 +567,27 @@ onBeforeMount(async () => {
     products.value = productStore.products;
     await customerStore.getCustomers();
     customers.value = customerStore.customers;
+    if (window.innerWidth >= 992) {
+        modalStyle.value = {
+            position: "static",
+            width: "35rem",
+            height: "auto",
+        };
+        cartModalStyle.value = {
+            position: "static",
+            width: "70rem",
+            height: "90%",
+        };
+        footerModalStyle.value = {
+            padding: "1.5rem",
+        };
+        cartFooterModalStyle.value = {
+            position: "static",
+            display: "flex",
+            "justify-content": "end",
+            padding: "1.5rem 1.5rem 2.5rem 1.5rem",
+        };
+    }
 });
 onMounted(() => {
     if (authStore.auth.roleId === 1) tax.value = 0.11;
@@ -735,6 +763,9 @@ const onEditProductOfCart = (item, isFromCart) => {
     modalMode.value.preview = false;
     editedCartIndex.value = checkCartIndex(item.id, item.size);
     if (isFromCart) {
+        productIndex.value = products.value
+            .map((product) => product.id)
+            .indexOf(id.value);
         visible.value = true;
         editFromCart.value = true;
     }
@@ -742,7 +773,6 @@ const onEditProductOfCart = (item, isFromCart) => {
 
 const onOpenCart = () => {
     if (!cart.value.length) return;
-    cartVisible.value = true;
     router.push({ name: route.name, query: { cart: "open" } });
 };
 
@@ -1234,7 +1264,35 @@ span.add-remove-span {
     }
 
     .cart-wrapper {
-        padding: 0 3rem 1.5rem 70rem;
+        padding: 0;
+        width: fit-content;
+        left: auto;
+        right: 3rem;
+        bottom: 1.5rem;
+
+        .cart {
+            height: 3.5rem;
+            width: 25rem;
+        }
+    }
+
+    .cart-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 3rem;
+        padding: 0 2rem;
+
+        .cart-info {
+            margin-top: 0;
+        }
+    }
+
+    .cart-footer {
+        width: 10rem;
+    }
+
+    .card {
+        padding: 1rem 1.5rem;
     }
 }
 </style>

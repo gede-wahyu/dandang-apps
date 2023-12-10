@@ -52,7 +52,7 @@ export const useAuthStore = defineStore('authStore', {
             this.auth.permission=null
         },
 
-        /** set basic permission for every route name */
+        /** set basic permission for every (1)route-name and (2)function-name */
         setBaseRolePermission() {
             if(!this.auth.authenticated) return;
             if(!this.auth.user) return;

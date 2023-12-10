@@ -1,7 +1,35 @@
 <template>
     <div v-if="visible" class="d-modal-mask" :style="maskStyle">
-        <div class="d-modal" :style="modalStyle" :class="modalClass">
-            <div class="d-modal-header" :style="headerStyle">
+        <div
+            class="d-modal"
+            :style="modalStyle"
+            :class="modalClass"
+            ref="modal"
+            @scroll="
+                if ($refs['modal'].scrollTop > 0)
+                    $refs['modalHeader'].classList.add('sticky-shadow');
+                else $refs['modalHeader'].classList.remove('sticky-shadow');
+                // console.log(
+                //     $refs['modal'].scrollTop,
+                //     '-',
+                //     $refs['modal'].clientHeight,
+                //     '-',
+                //     $refs['modal'].scrollHeight
+                // );
+                // console.log($refs['modalFooter'].classList);
+                if (
+                    Math.ceil(
+                        $refs['modal'].scrollTop + $refs['modal'].clientHeight
+                    ) >= $refs['modal'].scrollHeight
+                ) {
+                    $refs['modalFooter'].classList.remove(
+                        'sticky-shadow-reverse'
+                    );
+                } else
+                    $refs['modalFooter'].classList.add('sticky-shadow-reverse');
+            "
+        >
+            <div class="d-modal-header" :style="headerStyle" ref="modalHeader">
                 <div class="d-modal-header-left">
                     <div
                         class="d-modal-nav-button nav-back-button"
@@ -39,7 +67,11 @@
             <div class="d-modal-content">
                 <slot></slot>
             </div>
-            <div class="d-modal-footer" :style="footerStyle">
+            <div
+                class="d-modal-footer sticky-shadow-reverse"
+                :style="footerStyle"
+                ref="modalFooter"
+            >
                 <slot name="footer"></slot>
             </div>
         </div>
@@ -113,9 +145,12 @@ watch(
         width: 20rem;
         height: 30rem;
         padding: 0;
-        border-radius: var(--border-radius);
+        border-top-left-radius: var(--border-radius);
+        border-bottom-left-radius: var(--border-radius);
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
         position: relative;
-        overflow-y: scroll !important;
+        overflow-y: auto !important;
 
         .d-modal-content {
             padding: 0 1.5rem;
@@ -130,6 +165,9 @@ watch(
             top: 0;
             background: var(--surface-ground);
             padding: 1.5rem;
+            z-index: 5;
+            border-bottom-left-radius: var(--border-radius);
+            border-bottom-right-radius: var(--border-radius);
 
             .d-modal-header-left {
                 display: flex;
@@ -167,11 +205,53 @@ watch(
             }
         }
 
+        .sticky-shadow {
+            box-shadow: var(--box-shadow-set);
+        }
+        .sticky-shadow-reverse {
+            box-shadow: var(--box-shadow-set-reverse);
+        }
+
         .d-modal-footer {
             margin-top: 1.5rem;
             padding: 0 1.5rem;
             position: sticky;
             bottom: 0;
+            border-top-left-radius: var(--border-radius);
+            border-top-right-radius: var(--border-radius);
+        }
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .d-modal-mask {
+        .d-modal {
+            &::-webkit-scrollbar {
+                width: 15px;
+                margin-right: auto;
+            }
+
+            &::-webkit-scrollbar-track {
+                background: var(--surface-scrollbar);
+                border-radius: var(--border-radius);
+                transition: all 0.2s ease;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background: var(--surface-thumb);
+                border-radius: var(--border-radius);
+
+                &:hover {
+                    background: var(--primary-a);
+                }
+                &:active {
+                    background: var(--primary-a8);
+                }
+            }
+
+            .d-modal-footer {
+                box-shadow: none;
+            }
         }
     }
 }

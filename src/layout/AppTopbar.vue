@@ -40,6 +40,7 @@ watch(
     () => layoutStore.layoutConfig.activeMenuItem,
     () => {
         layoutStore.setBackWindowButton();
+        document.body.classList.remove("d-modal-open");
     }
 );
 onBeforeMount(() => {
